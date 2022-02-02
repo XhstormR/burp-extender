@@ -10,10 +10,10 @@ import java.io.File
 import javax.swing.JFileChooser
 
 class BurpPanelHelper(
-    private val burpExtender: IBurpExtenderCallbacks,
-) : BurpPanel() {
+    override val burpExtender: IBurpExtenderCallbacks,
+) : BurpPanel(), BurpLogger {
 
-    var profileMap = emptyMap<ProfileType, List<Profile>>()
+    var profileMap = emptyMap<ProfileType, List<PassiveScanner>>()
 
     private val profileTableModel = ProfileTableModel()
 
@@ -52,6 +52,12 @@ class BurpPanelHelper(
         profileMap = profiles
             .filter { it.enabled }
             .groupBy { it.type }
+            .mapValues { (k, v) ->
+                when (k) {
+                    ProfileType.Active -> error("")
+                    ProfileType.Passive -> v.map { PassiveScanner(it, burpExtender.helpers) }
+                }
+            }
         profileTableModel.setData(profiles)
     }
 
@@ -59,8 +65,6 @@ class BurpPanelHelper(
         directoryField.text = profilePath
         burpExtender.saveExtensionSetting(PROFILE_PATH_KEY, profilePath)
     }
-
-    private fun println(any: Any?) = burpExtender.printOutput(any.toString())
 
     companion object {
         private const val PROFILE_PATH_KEY = "PROFILE_PATH_KEY"

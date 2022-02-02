@@ -25,13 +25,14 @@ class BurpScannerInsertionPointProvider(
         while (true) {
             i = helpers.indexOf(request, INSERTION_PATTERN1, false, i, j)
             if (i == -1) break
-            insertionPoints.add(helpers.makeScannerInsertionPoint(javaClass.name, request, ++i, j))
+            insertionPoints.add(helpers.makeScannerInsertionPoint(INSERTION_POINT_NAME, request, ++i, j))
         }
 
         return insertionPoints
     }
 
     companion object {
+        private val INSERTION_POINT_NAME = clazz<BurpScannerInsertionPointProvider>().name
         private val INSERTION_PATTERN1 = "/".toByteArray()
         private val INSERTION_PATTERN2 = " HTTP".toByteArray()
     }
