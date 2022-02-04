@@ -15,6 +15,9 @@ dependencies {
     implementation("org.springframework:spring-expression:5.3.15")
 
     testImplementation("org.junit.jupiter:junit-jupiter:+")
+    testImplementation("org.mockito:mockito-core:+")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:+")
+    testImplementation("net.portswigger.burp.extender:burp-extender-api:+")
 }
 
 tasks {

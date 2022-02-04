@@ -1,6 +1,6 @@
-package io.github.xhstormr.burp.core
+package io.github.xhstormr.burp.core.model
 
-import io.github.xhstormr.burp.core.model.Profile
+import io.github.xhstormr.burp.core.clazz
 import javax.swing.table.DefaultTableModel
 
 class ProfileTableModel : DefaultTableModel(PROFILE_COLUMNNAMES, 0) {
@@ -19,9 +19,10 @@ class ProfileTableModel : DefaultTableModel(PROFILE_COLUMNNAMES, 0) {
 
     override fun isCellEditable(row: Int, column: Int) = false
 
-    private fun Profile.row() = arrayOf(enabled, name, detail.author)
+    private fun Profile.row() = arrayOf(enabled, name, type, detail.author)
 
     companion object {
-        private val PROFILE_COLUMNNAMES = arrayOf("Enabled", "Name", "Author")
+        val PROFILE_COLUMNNAMES = arrayOf("Enabled", "Name", "Type", "Author")
+        val PROFILE_COLUMWIDTHS = arrayOf(0.1, 0.6, 0.15, 0.15)
     }
 }

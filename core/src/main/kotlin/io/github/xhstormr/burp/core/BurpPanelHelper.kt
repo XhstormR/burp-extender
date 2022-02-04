@@ -3,7 +3,10 @@ package io.github.xhstormr.burp.core
 import burp.IBurpExtenderCallbacks
 import com.typesafe.config.ConfigFactory
 import io.github.xhstormr.burp.core.model.Profile
+import io.github.xhstormr.burp.core.model.ProfileTableModel
 import io.github.xhstormr.burp.core.model.ProfileType
+import io.github.xhstormr.burp.core.scanner.ActiveScanner
+import io.github.xhstormr.burp.core.scanner.PassiveScanner
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
 import java.io.File
@@ -13,7 +16,8 @@ class BurpPanelHelper(
     override val burpExtender: IBurpExtenderCallbacks,
 ) : BurpPanel(), BurpLogger {
 
-    var profileMap = emptyMap<ProfileType, List<PassiveScanner>>()
+    var activeScanners = listOf<ActiveScanner>()
+    var passiveScanners = listOf<PassiveScanner>()
 
     private val profileTableModel = ProfileTableModel()
 
@@ -49,16 +53,29 @@ class BurpPanelHelper(
             .toList()
         profiles.forEach(::println)
 
-        profileMap = profiles
+        profileTableModel.setData(profiles)
+        updateScanner(profiles)
+        updateProfileWidth(ProfileTableModel.PROFILE_COLUMWIDTHS)
+    }
+
+    private fun updateScanner(profiles: List<Profile>) {
+        profiles
             .filter { it.enabled }
             .groupBy { it.type }
-            .mapValues { (k, v) ->
+            .forEach { (k, v) ->
                 when (k) {
-                    ProfileType.Active -> error("")
-                    ProfileType.Passive -> v.map { PassiveScanner(it, burpExtender.helpers) }
+                    ProfileType.Active -> activeScanners = v.map { ActiveScanner(it, burpExtender) }
+                    ProfileType.Passive -> passiveScanners = v.map { PassiveScanner(it, burpExtender) }
                 }
             }
-        profileTableModel.setData(profiles)
+    }
+
+    private fun updateProfileWidth(percentages: Array<Double>) {
+        val factor = 10_000
+        for (i in percentages.indices) {
+            val column = profileTable.columnModel.getColumn(i)
+            column.preferredWidth = (factor * percentages[i]).toInt()
+        }
     }
 
     private fun updateProfilePath(profilePath: String) {

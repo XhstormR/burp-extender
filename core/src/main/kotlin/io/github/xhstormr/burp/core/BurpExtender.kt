@@ -28,7 +28,7 @@ open class BurpExtender :
         callbacks.setExtensionName(EXTENSION_NAME)
         callbacks.registerScannerCheck(BurpScannerCheck(helpers, burpExtender, burpPanelHelper))
         callbacks.registerScannerListener(this)
-        callbacks.registerScannerInsertionPointProvider(BurpScannerInsertionPointProvider(helpers))
+        callbacks.registerScannerInsertionPointProvider(PathInsertionPointProvider(helpers))
 
         SwingUtilities.invokeLater(::initUI)
     }
@@ -40,7 +40,7 @@ open class BurpExtender :
     override fun getUiComponent() = burpPanelHelper.`$$$getRootComponent$$$`()
 
     private fun initUI() {
-        burpExtender.customizeUiComponent(burpPanelHelper.`$$$getRootComponent$$$`())
+        burpExtender.customizeUiComponent(uiComponent)
         burpExtender.addSuiteTab(this)
     }
 

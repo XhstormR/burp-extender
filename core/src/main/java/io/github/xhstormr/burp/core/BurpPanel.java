@@ -65,6 +65,7 @@ public class BurpPanel {
         profileTable = new JTable();
         profileTable.setAutoCreateRowSorter(true);
         profileTable.setAutoResizeMode(4);
+        profileTable.setCellSelectionEnabled(true);
         scrollPane1.setViewportView(profileTable);
     }
 
@@ -74,4 +75,5 @@ public class BurpPanel {
     public JComponent $$$getRootComponent$$$() {
         return panel1;
     }
+
 }

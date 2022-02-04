@@ -61,6 +61,7 @@
                 <properties>
                   <autoCreateRowSorter value="true"/>
                   <autoResizeMode value="4"/>
+                  <cellSelectionEnabled value="true"/>
                 </properties>
               </component>
             </children>

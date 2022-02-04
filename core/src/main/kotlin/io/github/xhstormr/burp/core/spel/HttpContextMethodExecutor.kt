@@ -5,10 +5,10 @@ import org.springframework.expression.MethodExecutor
 import org.springframework.expression.TypedValue
 import java.lang.reflect.Method
 
-class RootObjectMethodExecutor(private val method: Method) : MethodExecutor {
+class HttpContextMethodExecutor(private val method: Method) : MethodExecutor {
 
     override fun execute(context: EvaluationContext, target: Any, vararg arguments: Any?): TypedValue {
-        val rootObject = context.rootObject.value as? RootObject ?: return TypedValue.NULL
-        return TypedValue(method.invoke(rootObject, target, *arguments))
+        val httpContext = context.rootObject.value as? HttpContext ?: return TypedValue.NULL
+        return TypedValue(method.invoke(httpContext, target, *arguments))
     }
 }
