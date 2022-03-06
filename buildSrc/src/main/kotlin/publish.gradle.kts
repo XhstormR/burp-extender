@@ -47,22 +47,26 @@ publishing {
         }
     }
     repositories {
-        // maven {
-        //     name = "LOCAL"
-        //     val releasesRepoUrl = uri(layout.buildDirectory.dir("repos/releases"))
-        //     val snapshotsRepoUrl = uri(layout.buildDirectory.dir("repos/snapshots"))
-        //     url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-        // }
-        // maven {
-        //     name = "OSSRH"
-        //     val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-        //     val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-        //     url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-        //     credentials {
-        //         username = extra["sonatypeUsername"].toString()
-        //         password = extra["sonatypePassword"].toString()
-        //     }
-        // }
+        maven {
+            name = "LOCAL"
+            val releasesRepoUrl = uri(layout.buildDirectory.dir("repos/releases"))
+            val snapshotsRepoUrl = uri(layout.buildDirectory.dir("repos/snapshots"))
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+        }
+        maven {
+            name = "OSSRH"
+            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            credentials {
+                runCatching {
+                    username = extra["sonatypeUsername"].toString()
+                    password = extra["sonatypePassword"].toString()
+                }.onFailure {
+                    logger.warn(it.message)
+                }
+            }
+        }
     }
 }
 

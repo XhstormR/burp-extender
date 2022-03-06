@@ -9,6 +9,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
     compileOnly("net.portswigger.burp.extender:burp-extender-api:+")
+    implementation(rootProject.files("./libs/albinowaxUtils-all.jar"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:+")
 
