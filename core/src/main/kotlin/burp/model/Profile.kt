@@ -1,6 +1,7 @@
 package burp.model
 
 import burp.IScannerInsertionPoint
+import burp.PathInsertionPointProvider
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -34,7 +35,7 @@ data class ProfileRule(
 @Serializable
 data class Payload(
     val part: PayloadPart,
-    val type: PayloadType = PayloadType.Replace,
+    val action: PayloadAction = PayloadAction.Replace,
     val name: String = "*",
     val values: List<String>,
 )
@@ -44,7 +45,7 @@ data class Matcher(
     val part: MatcherPart,
     val type: MatcherType = MatcherType.Word,
     val values: List<String>,
-    val condition: ConditionType = ConditionType.And,
+    val condition: ConditionType = ConditionType.Or,
     val negative: Boolean = false,
     val caseSensitive: Boolean = false,
 )
@@ -65,9 +66,10 @@ enum class PayloadPart {
     NameForm;
 }
 
-enum class PayloadType {
-    Append,
-    Replace;
+enum class PayloadAction {
+    Append,  // 后置
+    Prepend, // 前置
+    Replace; // 替换
 }
 
 enum class MatcherPart {
@@ -101,23 +103,6 @@ enum class ProfileType {
     Passive;
 }
 
-val PayloadPart.insertionPointType
-    get() = when (this) {
-        PayloadPart.Any -> Byte.MIN_VALUE
-        PayloadPart.Url -> IScannerInsertionPoint.INS_PARAM_URL
-        PayloadPart.Xml -> IScannerInsertionPoint.INS_PARAM_XML
-        PayloadPart.Json -> IScannerInsertionPoint.INS_PARAM_JSON
-        PayloadPart.Form -> IScannerInsertionPoint.INS_PARAM_BODY
-        PayloadPart.Body -> IScannerInsertionPoint.INS_ENTIRE_BODY
-        PayloadPart.Path -> (IScannerInsertionPoint.INS_EXTENSION_PROVIDED + 1).toByte()
-        PayloadPart.PathFile -> IScannerInsertionPoint.INS_URL_PATH_FILENAME
-        PayloadPart.PathFolder -> IScannerInsertionPoint.INS_URL_PATH_FOLDER
-        PayloadPart.Cookie -> IScannerInsertionPoint.INS_PARAM_COOKIE
-        PayloadPart.Header -> IScannerInsertionPoint.INS_HEADER
-        PayloadPart.NameUrl -> IScannerInsertionPoint.INS_PARAM_NAME_URL
-        PayloadPart.NameForm -> IScannerInsertionPoint.INS_PARAM_NAME_BODY
-    }
-
 fun <T> ConditionType.evaluate(array: Array<T>, predicate: (T) -> Boolean) = when (this) {
     ConditionType.Or -> array.any(predicate)
     ConditionType.And -> array.all(predicate)
@@ -127,3 +112,20 @@ fun <T> ConditionType.evaluate(list: List<T>, predicate: (T) -> Boolean) = when 
     ConditionType.Or -> list.any(predicate)
     ConditionType.And -> list.all(predicate)
 }
+
+val PayloadPart.insertionPointType
+    get() = when (this) {
+        PayloadPart.Any -> Byte.MIN_VALUE
+        PayloadPart.Url -> IScannerInsertionPoint.INS_PARAM_URL
+        PayloadPart.Xml -> IScannerInsertionPoint.INS_PARAM_XML
+        PayloadPart.Json -> IScannerInsertionPoint.INS_PARAM_JSON
+        PayloadPart.Form -> IScannerInsertionPoint.INS_PARAM_BODY
+        PayloadPart.Body -> IScannerInsertionPoint.INS_ENTIRE_BODY
+        PayloadPart.Path -> PathInsertionPointProvider.INSERTION_POINT_TYPE
+        PayloadPart.PathFile -> IScannerInsertionPoint.INS_URL_PATH_FILENAME
+        PayloadPart.PathFolder -> IScannerInsertionPoint.INS_URL_PATH_FOLDER
+        PayloadPart.Cookie -> IScannerInsertionPoint.INS_PARAM_COOKIE
+        PayloadPart.Header -> IScannerInsertionPoint.INS_HEADER
+        PayloadPart.NameUrl -> IScannerInsertionPoint.INS_PARAM_NAME_URL
+        PayloadPart.NameForm -> IScannerInsertionPoint.INS_PARAM_NAME_BODY
+    }

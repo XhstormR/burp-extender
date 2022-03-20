@@ -26,6 +26,7 @@ open class BurpExtender :
         callbacks.registerScannerListener(this)
         callbacks.registerScannerInsertionPointProvider(PathInsertionPointProvider(helpers))
 
+        println("Loaded $EXTENSION_NAME v$VERSION")
         SwingUtilities.invokeLater(::initUI)
     }
 
@@ -42,5 +43,6 @@ open class BurpExtender :
 
     companion object {
         private const val EXTENSION_NAME = "Burp Extender"
+        private const val VERSION = "1.0"
     }
 }

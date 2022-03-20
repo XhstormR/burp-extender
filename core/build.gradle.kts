@@ -13,7 +13,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:+")
 
-    implementation("org.springframework:spring-expression:5.3.15")
+    implementation("org.springframework:spring-expression:5.3.17")
 
     testImplementation("org.junit.jupiter:junit-jupiter:+")
     testImplementation("org.mockito:mockito-core:+")

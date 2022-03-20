@@ -77,7 +77,7 @@ class HttpRequestResponseWrapper(
         fun mark(regex: Regex): Boolean {
             val result = regex.find(all) ?: return false
             with(result) {
-                markers.add(intArrayOf(range.first + bodyOffset, range.last + bodyOffset + 1))
+                markers.add(intArrayOf(range.first, range.last + 1))
             }
             return true
         }

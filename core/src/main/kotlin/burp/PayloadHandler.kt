@@ -2,7 +2,7 @@ package burp
 
 import burp.model.Payload
 import burp.model.PayloadPart
-import burp.model.PayloadType
+import burp.model.PayloadAction
 import burp.model.insertionPointType
 import burp.spel.HttpContextEvaluator
 
@@ -17,16 +17,18 @@ object PayloadHandler {
     ): List<ByteArray>? {
         payload ?: return null
 
-        val (part, type, name, values) = payload
-        val pass = checkPart(part, insertionPoint) && checkName(name, insertionPoint)
+        val (part, action, name, values) = payload
+
+        val pass = checkInsertionPoint(insertionPoint, payload)
         if (!pass) return null
 
         val payloads = values
             .mapNotNull { evaluator.evaluate(it) }
             .map {
-                when (type) {
-                    PayloadType.Append -> insertionPoint.baseValue + it
-                    PayloadType.Replace -> it
+                when (action) {
+                    PayloadAction.Append -> insertionPoint.baseValue + it
+                    PayloadAction.Prepend -> it + insertionPoint.baseValue
+                    PayloadAction.Replace -> it
                 }
             }
             .map { it.toByteArray() }
@@ -42,14 +44,17 @@ object PayloadHandler {
         }
     }
 
-    private fun checkPart(part: PayloadPart, insertionPoint: IScannerInsertionPoint) = when (part) {
+    private fun checkInsertionPoint(insertionPoint: IScannerInsertionPoint, payload: Payload) =
+        checkPart(insertionPoint, payload.part) && checkName(insertionPoint, payload.name)
+
+    private fun checkPart(insertionPoint: IScannerInsertionPoint, part: PayloadPart) = when (part) {
         PayloadPart.Any -> true
         PayloadPart.Path -> insertionPoint.insertionPointName == PathInsertionPointProvider.INSERTION_POINT_NAME
         else -> insertionPoint.insertionPointType == part.insertionPointType
     }
 
-    private fun checkName(name: String, insertionPoint: IScannerInsertionPoint) = when (name) {
+    private fun checkName(insertionPoint: IScannerInsertionPoint, name: String) = when (name) {
         "*" -> true
-        else -> name == insertionPoint.insertionPointName
+        else -> insertionPoint.insertionPointName == name
     }
 }

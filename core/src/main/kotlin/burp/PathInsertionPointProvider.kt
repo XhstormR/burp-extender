@@ -34,6 +34,7 @@ class PathInsertionPointProvider(
 
     companion object {
         val INSERTION_POINT_NAME = clazz<PathInsertionPointProvider>().name
+        val INSERTION_POINT_TYPE = (IScannerInsertionPoint.INS_EXTENSION_PROVIDED + 1).toByte()
 
         private val INSERTION_PATTERN1 = "/".toByteArray()
         private val INSERTION_PATTERN2 = "?".toByteArray()
