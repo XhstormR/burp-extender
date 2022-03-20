@@ -35,17 +35,10 @@ object PayloadHandler {
         headers ?: return payloads
 
         return payloads.map {
-            val checkRequestInfo = helpers.analyzeRequest(it)
-            val requestBody = it.sliceArray(checkRequestInfo.bodyOffset..it.lastIndex)
-            val requestHeaders = checkRequestInfo.headers
-
             headers
                 .mapValues { (_, v) -> evaluator.evaluate(v) }
-                .forEach { (k, v) ->
-                    requestHeaders.removeIf { it.startsWith("$k:", true) }
-                    requestHeaders.add("$k:$v")
-                }
-            helpers.buildHttpMessage(requestHeaders, requestBody)
+                .entries
+                .fold(it) { acc, (k, v) -> Utilities.addOrReplaceHeader(acc, k, v) }
         }
     }
 

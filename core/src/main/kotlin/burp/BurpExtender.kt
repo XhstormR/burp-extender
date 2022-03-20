@@ -19,6 +19,8 @@ open class BurpExtender :
         helpers = callbacks.helpers
         burpPanelHelper = BurpPanelHelper(callbacks)
 
+        Utilities(callbacks, null, EXTENSION_NAME)
+
         callbacks.setExtensionName(EXTENSION_NAME)
         callbacks.registerScannerCheck(BurpScannerCheck(helpers, burpExtender, burpPanelHelper))
         callbacks.registerScannerListener(this)
