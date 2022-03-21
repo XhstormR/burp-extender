@@ -30,7 +30,9 @@ open class BurpExtender :
         SwingUtilities.invokeLater(::initUI)
     }
 
-    override fun newScanIssue(issue: IScanIssue) = println("${issue.url} || ${issue.issueName}")
+    override fun newScanIssue(issue: IScanIssue) = with(issue) {
+        println("Found [$severity] issue [$issueName] from [$url]")
+    }
 
     override fun getTabCaption() = EXTENSION_NAME
 

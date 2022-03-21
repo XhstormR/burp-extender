@@ -10,13 +10,9 @@ class HttpRequestResponseWrapper(
 
     init {
         val requestInfo = helpers.analyzeRequest(this)
-        // val requestBody = this.requestBody(requestInfo.bodyOffset)
-        // val requestHeader = this.requestHeader(requestInfo.bodyOffset)
         requestInfoWrapper = RequestInfoWrapper(requestInfo, request)
 
         val responseInfo = helpers.analyzeResponse(this.response)
-        // val responseBody = this.responseBody(responseInfo.bodyOffset)
-        // val responseHeader = this.responseHeader(responseInfo.bodyOffset)
         responseInfoWrapper = ResponseInfoWrapper(responseInfo, response)
     }
 

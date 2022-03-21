@@ -32,7 +32,7 @@ class BurpPanelHelper(
     }
 
     private fun selectProfilePath() {
-        val fileChooser = JFileChooser()
+        val fileChooser = JFileChooser(directoryField.text)
             .apply { fileSelectionMode = JFileChooser.DIRECTORIES_ONLY }
 
         val userSelection = fileChooser.showOpenDialog(`$$$getRootComponent$$$`())
@@ -42,7 +42,7 @@ class BurpPanelHelper(
     }
 
     private fun loadProfilePath() {
-        println(directoryField.text)
+        if (directoryField.text.isEmpty()) return
 
         val profiles = File(directoryField.text)
             .walk()
@@ -50,7 +50,8 @@ class BurpPanelHelper(
             .map { ConfigFactory.parseFile(it) }
             .map { Hocon.decodeFromConfig<Profile>(it) }
             .toList()
-        profiles.forEach(::println)
+
+        println("Loaded profile [${profiles.joinToString { it.name }}] from [${directoryField.text}]")
 
         profileTableModel.setData(profiles)
         updateScanner(profiles)
@@ -72,8 +73,7 @@ class BurpPanelHelper(
     private fun updateProfileWidth(percentages: Array<Double>) {
         val factor = 10_000
         for (i in percentages.indices) {
-            val column = profileTable.columnModel.getColumn(i)
-            column.preferredWidth = (factor * percentages[i]).toInt()
+            profileTable.columnModel.getColumn(i).preferredWidth = (factor * percentages[i]).toInt()
         }
     }
 

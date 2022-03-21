@@ -81,7 +81,7 @@ open class PassiveScanner(
         matchers: List<Matcher>,
         matchersCondition: ConditionType,
         evaluator: HttpContextEvaluator,
-    ) = matchersCondition.evaluate(matchers) { (part, type, values, condition, negative, caseSensitive) ->
+    ) = matchersCondition.evaluate(matchers) { (part, type, values, negative, caseSensitive, condition) ->
         val request = http.requestInfoWrapper
         val response = http.responseInfoWrapper
         values.mapNotNull { evaluator.evaluate(it) }.let {

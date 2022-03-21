@@ -12,7 +12,7 @@ data class Profile(
     val detail: ProfileDetail,
     val variables: Map<String, String>? = null,
     val rules: List<ProfileRule>,
-    val rulesCondition: ConditionType = ConditionType.And,
+    val rulesCondition: ConditionType = ConditionType.Or,
 )
 
 @Serializable
@@ -29,14 +29,14 @@ data class ProfileRule(
     val payload: Payload? = null,
     val headers: Map<String, String>? = null,
     val matchers: List<Matcher>,
-    val matchersCondition: ConditionType = ConditionType.And,
+    val matchersCondition: ConditionType = ConditionType.Or,
 )
 
 @Serializable
 data class Payload(
     val part: PayloadPart,
-    val action: PayloadAction = PayloadAction.Replace,
     val name: String = "*",
+    val action: PayloadAction = PayloadAction.Replace,
     val values: List<String>,
 )
 
@@ -45,10 +45,23 @@ data class Matcher(
     val part: MatcherPart,
     val type: MatcherType = MatcherType.Word,
     val values: List<String>,
-    val condition: ConditionType = ConditionType.Or,
     val negative: Boolean = false,
     val caseSensitive: Boolean = false,
+    val condition: ConditionType = ConditionType.Or,
 )
+
+enum class Severity {
+    High,
+    Medium,
+    Low,
+    Information;
+}
+
+enum class Confidence {
+    Certain,
+    Firm,
+    Tentative;
+}
 
 enum class PayloadPart {
     Any,
@@ -67,7 +80,7 @@ enum class PayloadPart {
 }
 
 enum class PayloadAction {
-    Append,  // 后置
+    Append, // 后置
     Prepend, // 前置
     Replace; // 替换
 }

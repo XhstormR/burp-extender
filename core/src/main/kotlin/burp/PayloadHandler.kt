@@ -1,8 +1,8 @@
 package burp
 
 import burp.model.Payload
-import burp.model.PayloadPart
 import burp.model.PayloadAction
+import burp.model.PayloadPart
 import burp.model.insertionPointType
 import burp.spel.HttpContextEvaluator
 
@@ -17,7 +17,7 @@ object PayloadHandler {
     ): List<ByteArray>? {
         payload ?: return null
 
-        val (part, action, name, values) = payload
+        val (part, name, action, values) = payload
 
         val pass = checkInsertionPoint(insertionPoint, payload)
         if (!pass) return null
