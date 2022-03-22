@@ -28,7 +28,7 @@ data class ProfileDetail(
 data class ProfileRule(
     val payload: Payload? = null,
     val headers: Map<String, String>? = null,
-    val matchers: List<Matcher>,
+    val matchers: List<Matcher> = listOf(),
     val matchersCondition: ConditionType = ConditionType.Or,
 )
 
@@ -36,6 +36,7 @@ data class ProfileRule(
 data class Payload(
     val part: PayloadPart,
     val name: String = "*",
+    val oob: Boolean = false,
     val action: PayloadAction = PayloadAction.Replace,
     val values: List<String>,
 )
@@ -125,6 +126,9 @@ fun <T> ConditionType.evaluate(list: List<T>, predicate: (T) -> Boolean) = when 
     ConditionType.Or -> list.any(predicate)
     ConditionType.And -> list.all(predicate)
 }
+
+val ProfileDetail.issueDetail
+    get() = description + "\n" + links.joinToString("\n")
 
 val PayloadPart.insertionPointType
     get() = when (this) {

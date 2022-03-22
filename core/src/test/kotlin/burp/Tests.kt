@@ -130,4 +130,17 @@ class Tests {
             println(it.contentToString())
         }
     }
+
+    @Test
+    fun test7() {
+        val callbacks = mock<IBurpExtenderCallbacks>()
+        val generalSettings = GeneralSettings.Builder()
+            .withErrorConsumer(callbacks::printError)
+            .withOutputConsumer(callbacks::printOutput)
+            .withExtensionSettingSaver(callbacks::saveExtensionSetting)
+            .withExtensionSettingLoader(callbacks::loadExtensionSetting)
+            .build()
+        println(callbacks)
+        println(generalSettings)
+    }
 }

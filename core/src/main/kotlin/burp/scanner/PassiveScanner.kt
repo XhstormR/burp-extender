@@ -11,6 +11,7 @@ import burp.model.MatcherType
 import burp.model.Profile
 import burp.model.ScanIssue
 import burp.model.evaluate
+import burp.model.issueDetail
 import burp.spel.HttpContext
 import burp.spel.HttpContextEvaluator
 import burp.toMarkedRequestResponse
@@ -67,7 +68,7 @@ open class PassiveScanner(
             ScanIssue(
                 request.url,
                 name,
-                detail.description,
+                detail.issueDetail,
                 detail.severity,
                 detail.confidence,
                 http.httpService,
@@ -94,11 +95,11 @@ open class PassiveScanner(
                             MatcherPart.Request -> request.mark(value, caseSensitive)
                             MatcherPart.RequestBody -> request.markBody(value, caseSensitive)
                             MatcherPart.RequestHeader -> request.markHeader(value, caseSensitive)
-                            MatcherPart.Status -> response.statusCode == value.toShort()
+                            MatcherPart.Status -> response.statusCode.toString() == value
                             MatcherPart.Response -> response.mark(value, caseSensitive)
-                            MatcherPart.ResponseType -> response.responseType.contains(value, caseSensitive)
                             MatcherPart.ResponseBody -> response.markBody(value, caseSensitive)
                             MatcherPart.ResponseHeader -> response.markHeader(value, caseSensitive)
+                            MatcherPart.ResponseType -> response.responseType.contains(value, caseSensitive)
                             MatcherPart.ResponseTime -> response.checkResponseTime(value)
                         }
                     }
@@ -112,9 +113,9 @@ open class PassiveScanner(
                             MatcherPart.RequestHeader -> request.markHeader(regex)
                             MatcherPart.Status -> response.statusCode.toString().contains(regex)
                             MatcherPart.Response -> response.mark(regex)
-                            MatcherPart.ResponseType -> response.responseType.contains(regex)
                             MatcherPart.ResponseBody -> response.markBody(regex)
                             MatcherPart.ResponseHeader -> response.markHeader(regex)
+                            MatcherPart.ResponseType -> response.responseType.contains(regex)
                             MatcherPart.ResponseTime -> response.checkResponseTime(value)
                         }
                     }

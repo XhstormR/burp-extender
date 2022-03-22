@@ -1,46 +1,57 @@
 package burp
 
+import javax.swing.JTabbedPane
 import javax.swing.SwingUtilities
 
-open class BurpExtender :
-    IBurpExtender,
-    ITab,
-    IScannerListener,
-    BurpLogger {
+open class BurpExtender : IBurpExtender, IExtensionStateListener {
 
-    override lateinit var burpExtender: IBurpExtenderCallbacks
+    private lateinit var burpExtender: IBurpExtenderCallbacks
 
     private lateinit var helpers: IExtensionHelpers
 
     private lateinit var burpPanelHelper: BurpPanelHelper
 
+    private lateinit var burpCollaborator: BurpCollaborator
+
     override fun registerExtenderCallbacks(callbacks: IBurpExtenderCallbacks) {
+        Utilities(callbacks, null, EXTENSION_NAME)
+        Utilities.out("Loaded $EXTENSION_NAME v$VERSION")
+
         burpExtender = callbacks
         helpers = callbacks.helpers
         burpPanelHelper = BurpPanelHelper(callbacks)
-
-        Utilities(callbacks, null, EXTENSION_NAME)
+        burpCollaborator = BurpCollaborator(callbacks.createBurpCollaboratorClientContext())
 
         callbacks.setExtensionName(EXTENSION_NAME)
-        callbacks.registerScannerCheck(BurpScannerCheck(helpers, burpExtender, burpPanelHelper))
-        callbacks.registerScannerListener(this)
+        callbacks.registerScannerCheck(BurpScannerCheck(helpers, burpExtender, burpPanelHelper, burpCollaborator))
         callbacks.registerScannerInsertionPointProvider(PathInsertionPointProvider(helpers))
+        callbacks.registerScannerListener(createScannerListener())
 
-        println("Loaded $EXTENSION_NAME v$VERSION")
         SwingUtilities.invokeLater(::initUI)
     }
 
-    override fun newScanIssue(issue: IScanIssue) = with(issue) {
-        println("Found [$severity] issue [$issueName] from [$url]")
+    override fun extensionUnloaded() {
+        burpCollaborator.close()
     }
 
-    override fun getTabCaption() = EXTENSION_NAME
-
-    override fun getUiComponent() = burpPanelHelper.`$$$getRootComponent$$$`()
-
     private fun initUI() {
-        burpExtender.customizeUiComponent(uiComponent)
-        burpExtender.addSuiteTab(this)
+        with(createConfigurationTab()) {
+            burpExtender.customizeUiComponent(uiComponent)
+            burpExtender.addSuiteTab(this)
+        }
+    }
+
+    private fun createScannerListener() = IScannerListener {
+        with(it) {
+            Utilities.out("Found [$severity] issue [$issueName] from [$url]")
+        }
+    }
+
+    private fun createConfigurationTab() = object : ITab {
+        override fun getTabCaption() = EXTENSION_NAME
+        override fun getUiComponent() = JTabbedPane().apply {
+            addTab("Profiles", burpPanelHelper.`$$$getRootComponent$$$`())
+        }
     }
 
     companion object {

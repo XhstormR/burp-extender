@@ -1,5 +1,6 @@
 package burp.scanner
 
+import burp.BurpCollaborator
 import burp.HttpRequestResponseWrapper
 import burp.IBurpExtenderCallbacks
 import burp.IHttpRequestResponse
@@ -11,6 +12,7 @@ import burp.model.ConditionType
 import burp.model.Profile
 import burp.model.ScanIssue
 import burp.model.evaluate
+import burp.model.issueDetail
 import burp.spel.HttpContext
 import burp.spel.HttpContextEvaluator
 import burp.toMarkedRequestResponse
@@ -25,6 +27,7 @@ class ActiveScanner(
     fun scan(
         baseRequestResponse: IHttpRequestResponse,
         insertionPoint: IScannerInsertionPoint,
+        burpCollaborator: BurpCollaborator,
     ): IScanIssue? {
 
         var http = HttpRequestResponseWrapper(baseRequestResponse, helpers)
@@ -53,7 +56,7 @@ class ActiveScanner(
         println(httpContext.variables)
 
         val pass = rulesCondition.evaluate(rules) { (payload, headers, matchers, matchersCondition) ->
-            val checkRequests = PayloadHandler.handle(payload, insertionPoint, evaluator, headers, helpers) ?: return@evaluate false
+            val checkRequests = PayloadHandler.handle(payload, insertionPoint, evaluator, headers, burpCollaborator) ?: return@evaluate false
 
             ConditionType.Or.evaluate(checkRequests) { checkRequest ->
                 val (checkRequestResponse, responseTime) = measureTimeMillisWithResult {
@@ -69,7 +72,7 @@ class ActiveScanner(
             ScanIssue(
                 http.requestInfoWrapper.url,
                 name,
-                detail.description,
+                detail.issueDetail,
                 detail.severity,
                 detail.confidence,
                 http.httpService,

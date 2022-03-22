@@ -12,8 +12,8 @@ import java.io.File
 import javax.swing.JFileChooser
 
 class BurpPanelHelper(
-    override val burpExtender: IBurpExtenderCallbacks,
-) : BurpPanel(), BurpLogger {
+    private val burpExtender: IBurpExtenderCallbacks,
+) : BurpPanel() {
 
     var activeScanners = listOf<ActiveScanner>()
     var passiveScanners = listOf<PassiveScanner>()
@@ -44,18 +44,23 @@ class BurpPanelHelper(
     private fun loadProfilePath() {
         if (directoryField.text.isEmpty()) return
 
-        val profiles = File(directoryField.text)
-            .walk()
-            .filter { it.extension == "conf" }
-            .map { ConfigFactory.parseFile(it) }
-            .map { Hocon.decodeFromConfig<Profile>(it) }
-            .toList()
+        try {
+            val profiles = File(directoryField.text)
+                .walk()
+                .filter { it.extension == "conf" }
+                .map { ConfigFactory.parseFile(it) }
+                .map { Hocon.decodeFromConfig<Profile>(it) }
+                .toList()
 
-        println("Loaded profile [${profiles.joinToString { it.name }}] from [${directoryField.text}]")
+            profileTableModel.setData(profiles)
+            updateScanner(profiles)
+            updateProfileWidth(ProfileTableModel.PROFILE_COLUMWIDTHS)
 
-        profileTableModel.setData(profiles)
-        updateScanner(profiles)
-        updateProfileWidth(ProfileTableModel.PROFILE_COLUMWIDTHS)
+            Utilities.out("Loaded profiles [${profiles.joinToString { it.name }}] from [${directoryField.text}]")
+        } catch (e: Exception) {
+            Utilities.err("Failed to load profiles from [${directoryField.text}]")
+            Utilities.err(e.stackTraceToString())
+        }
     }
 
     private fun updateScanner(profiles: List<Profile>) {

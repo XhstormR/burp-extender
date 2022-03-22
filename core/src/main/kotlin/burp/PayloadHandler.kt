@@ -13,14 +13,24 @@ object PayloadHandler {
         insertionPoint: IScannerInsertionPoint,
         evaluator: HttpContextEvaluator,
         headers: Map<String, String>?,
-        helpers: IExtensionHelpers,
+        burpCollaborator: BurpCollaborator,
     ): List<ByteArray>? {
         payload ?: return null
 
-        val (part, name, action, values) = payload
+        val (part, name, oob, action, values) = payload
 
         val pass = checkInsertionPoint(insertionPoint, payload)
         if (!pass) return null
+
+        if (oob) {
+            with(evaluator.httpContext.http.requestInfoWrapper.url) {
+                val host = host.replace('.', '_')
+                val path = path.replace('.', '_').replace('/', '_')
+                val type = insertionPoint.insertionPointType
+                val bc = burpCollaborator.generatePayload()
+                evaluator.setVariable("BC", "$host.$path.$type.$bc")
+            }
+        }
 
         val payloads = values
             .mapNotNull { evaluator.evaluate(it) }
