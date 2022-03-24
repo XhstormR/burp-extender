@@ -104,16 +104,40 @@ class Tests {
     }
 
     @Test
-    fun test5() {
+    fun regex1() {
         val input = "1234gUnicorn1234"
-        val regex = """(?i)Gu.*rn""".toRegex()
+        val pattern = """(?i)Gu.*rn"""
+        val regex = pattern.toRegex()
+
+        Assertions.assertFalse(regex.matches(input))
+        Assertions.assertTrue(regex.containsMatchIn(input))
+
+        Assertions.assertNull(regex.matchEntire(input))
+        Assertions.assertNotNull(regex.find(input))
+
         val result = regex.find(input)!!
         println(result.value)
         println(result.range)
         println(result.groups)
+    }
+
+    @Test
+    fun regex2() {
+        val input = """<a href="/aria2/aria2/releases/download/release-1.36.0/aria2-1.36.0-win-64bit-build1.zip" rel="nofollow">"""
+        val pattern = """/release-[\d.]+/aria2-(?<version>[\d.]+)-win-64bit-build(?<build>[\d]+)\.zip"""
+        val regex = pattern.toRegex()
 
         Assertions.assertFalse(regex.matches(input))
-        Assertions.assertTrue(input.contains(regex))
+        Assertions.assertTrue(regex.containsMatchIn(input))
+
+        Assertions.assertNull(regex.matchEntire(input))
+        Assertions.assertNotNull(regex.find(input))
+
+        val matchResult = regex.find(input) ?: return
+        matchResult.groups.forEach { println(it) }
+        val version = matchResult.groups["version"]?.value
+        val build = matchResult.groups["build"]?.value
+        println("checkver: $version-$build")
     }
 
     @Test

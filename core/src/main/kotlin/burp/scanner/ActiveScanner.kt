@@ -60,10 +60,24 @@ class ActiveScanner(
 
             ConditionType.Or.evaluate(checkRequests) { checkRequest ->
                 val (checkRequestResponse, responseTime) = measureTimeMillisWithResult {
-                    burpExtender.makeHttpRequest(baseRequestResponse.httpService, checkRequest)
+                    burpExtender.makeHttpRequest(baseRequestResponse.httpService, checkRequest.bytes)
                 }
+
                 http = HttpRequestResponseWrapper(checkRequestResponse, helpers)
+                    .apply { requestInfoWrapper.markers.add(checkRequest.payloadOffset) }
                     .apply { responseInfoWrapper.responseTime = responseTime }
+
+                checkRequest.oobId?.let { oobId ->
+                    ScanIssue(
+                        http.requestInfoWrapper.url,
+                        name,
+                        detail.issueDetail,
+                        detail.severity,
+                        detail.confidence,
+                        http.httpService,
+                        arrayOf(http.toMarkedRequestResponse(burpExtender)),
+                    ).let { burpCollaborator.registerOutOfBandData(oobId, it) }
+                }
                 match(http, matchers, matchersCondition, evaluator)
             }
         }

@@ -12,6 +12,12 @@ fun IHttpRequestResponse.responseHeader(bodyOffset: Int) = response.sliceArray(0
 fun IHttpRequestResponse.requestHeaderString(bodyOffset: Int) = request.decodeToString(0, bodyOffset)
 fun IHttpRequestResponse.responseHeaderString(bodyOffset: Int) = response.decodeToString(0, bodyOffset)
 
+fun IExtensionHelpers.indexOfL(data: ByteArray, pattern: ByteArray, caseSensitive: Boolean, from: Int, to: Int) =
+    indexOf(data, pattern, caseSensitive, from, to)
+
+fun IExtensionHelpers.indexOfR(data: ByteArray, pattern: ByteArray, caseSensitive: Boolean, from: Int, to: Int) =
+    indexOf(data, pattern, caseSensitive, from, to).let { if (it == -1) it else it + pattern.size }
+
 fun HttpRequestResponseWrapper.toMarkedRequestResponse(burpExtender: IBurpExtenderCallbacks): IHttpRequestResponseWithMarkers =
     burpExtender.applyMarkers(
         this,

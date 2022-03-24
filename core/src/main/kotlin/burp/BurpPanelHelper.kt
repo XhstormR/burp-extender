@@ -50,7 +50,7 @@ class BurpPanelHelper(
                 .filter { it.extension == "conf" }
                 .map { ConfigFactory.parseFile(it) }
                 .map { Hocon.decodeFromConfig<Profile>(it) }
-                .toList()
+                .toSet()
 
             profileTableModel.setData(profiles)
             updateScanner(profiles)
@@ -63,7 +63,7 @@ class BurpPanelHelper(
         }
     }
 
-    private fun updateScanner(profiles: List<Profile>) {
+    private fun updateScanner(profiles: Collection<Profile>) {
         profiles
             .filter { it.enabled }
             .groupBy { it.type }

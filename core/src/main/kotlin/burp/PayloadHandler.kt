@@ -14,21 +14,23 @@ object PayloadHandler {
         evaluator: HttpContextEvaluator,
         headers: Map<String, String>?,
         burpCollaborator: BurpCollaborator,
-    ): List<ByteArray>? {
+    ): List<RequestHolder>? {
         payload ?: return null
 
         val (part, name, oob, action, values) = payload
 
-        val pass = checkInsertionPoint(insertionPoint, payload)
+        val pass = checkPayload(payload, insertionPoint)
         if (!pass) return null
 
+        var oobId: String? = null
         if (oob) {
             with(evaluator.httpContext.http.requestInfoWrapper.url) {
                 val host = host.replace('.', '_')
                 val path = path.replace('.', '_').replace('/', '_')
                 val type = insertionPoint.insertionPointType
-                val bc = burpCollaborator.generatePayload()
-                evaluator.setVariable("BC", "$host.$path.$type.$bc")
+                oobId = burpCollaborator.generatePayload(false)
+                val oobHost = "$oobId.${burpCollaborator.collaboratorServerLocation}"
+                evaluator.setVariable("OOB", "$host.$path.$type.$oobHost")
             }
         }
 
@@ -42,29 +44,40 @@ object PayloadHandler {
                 }
             }
             .map { it.toByteArray() }
-            .map { insertionPoint.buildRequest(it) }
+            .map { RequestHolder(insertionPoint.buildRequest(it), insertionPoint.getPayloadOffsets(it), oobId) }
 
         headers ?: return payloads
 
-        return payloads.map {
+        return payloads.map { holder ->
             headers
                 .mapValues { (_, v) -> evaluator.evaluate(v) }
                 .entries
-                .fold(it) { acc, (k, v) -> Utilities.addOrReplaceHeader(acc, k, v) }
+                .fold(holder.bytes) { acc, (k, v) -> Utilities.addOrReplaceHeader(acc, k, v) }
+                .let { RequestHolder(it, holder.payloadOffset, oobId) }
         }
     }
 
-    private fun checkInsertionPoint(insertionPoint: IScannerInsertionPoint, payload: Payload) =
-        checkPart(insertionPoint, payload.part) && checkName(insertionPoint, payload.name)
+    private fun checkPayload(payload: Payload, insertionPoint: IScannerInsertionPoint) =
+        when (insertionPoint.insertionPointType) {
+            IScannerInsertionPoint.INS_EXTENSION_PROVIDED -> checkCustomizeInsertionPoint(payload, insertionPoint)
+            else -> checkPart(payload.part, insertionPoint.insertionPointType) && checkName(payload.name, insertionPoint.insertionPointName)
+        }
 
-    private fun checkPart(insertionPoint: IScannerInsertionPoint, part: PayloadPart) = when (part) {
+    private fun checkCustomizeInsertionPoint(payload: Payload, insertionPoint: IScannerInsertionPoint) =
+        insertionPoint.insertionPointName.split('|').takeIf { it.size == 2 }?.let {
+            val (insertionPointType, insertionPointName) = it
+            checkPart(payload.part, insertionPointType.toByte()) && checkName(payload.name, insertionPointName)
+        } ?: false
+
+    private fun checkPart(part: PayloadPart, insertionPointType: Byte) = when (part) {
         PayloadPart.Any -> true
-        PayloadPart.Path -> insertionPoint.insertionPointName == PathInsertionPointProvider.INSERTION_POINT_NAME
-        else -> insertionPoint.insertionPointType == part.insertionPointType
+        else -> part.insertionPointType == insertionPointType
     }
 
-    private fun checkName(insertionPoint: IScannerInsertionPoint, name: String) = when (name) {
+    private fun checkName(name: String, insertionPointName: String) = when (name) {
         "*" -> true
-        else -> insertionPoint.insertionPointName == name
+        else -> name.toRegex().containsMatchIn(insertionPointName)
     }
+
+    class RequestHolder(val bytes: ByteArray, val payloadOffset: IntArray, val oobId: String?)
 }

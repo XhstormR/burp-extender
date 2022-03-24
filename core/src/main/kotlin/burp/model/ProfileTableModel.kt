@@ -5,7 +5,7 @@ import javax.swing.table.DefaultTableModel
 
 class ProfileTableModel : DefaultTableModel(PROFILE_COLUMNNAMES, 0) {
 
-    fun setData(profiles: List<Profile>) {
+    fun setData(profiles: Collection<Profile>) {
         val columnData = profiles
             .map { it.row() }
             .toTypedArray()

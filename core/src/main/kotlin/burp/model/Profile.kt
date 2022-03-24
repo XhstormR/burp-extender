@@ -1,7 +1,6 @@
 package burp.model
 
 import burp.IScannerInsertionPoint
-import burp.PathInsertionPointProvider
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -65,18 +64,17 @@ enum class Confidence {
 }
 
 enum class PayloadPart {
-    Any,
-    Url,
-    Xml,
+    Any, // *
+    Url, // url query value: ?id={}
+    Xml, //
     Json,
     Form,
     Body,
-    Path,
-    PathFile,
-    PathFolder,
+    PathFile, // path brust: /v2/pet/123/{}
+    PathFolder, // path brust: /{}/pet/123/
     Cookie,
-    Header,
-    NameUrl,
+    Header, // request header: User-Agent: {}
+    NameUrl, // url query key: ?id=9527&{}=1
     NameForm;
 }
 
@@ -127,8 +125,10 @@ fun <T> ConditionType.evaluate(list: List<T>, predicate: (T) -> Boolean) = when 
     ConditionType.And -> list.all(predicate)
 }
 
-val ProfileDetail.issueDetail
-    get() = description + "\n" + links.joinToString("\n")
+const val LINE_BREAK = "<br>"
+
+val ProfileDetail.issueDetail: String
+    get() = description + LINE_BREAK.repeat(2) + links.joinToString(LINE_BREAK)
 
 val PayloadPart.insertionPointType
     get() = when (this) {
@@ -138,7 +138,6 @@ val PayloadPart.insertionPointType
         PayloadPart.Json -> IScannerInsertionPoint.INS_PARAM_JSON
         PayloadPart.Form -> IScannerInsertionPoint.INS_PARAM_BODY
         PayloadPart.Body -> IScannerInsertionPoint.INS_ENTIRE_BODY
-        PayloadPart.Path -> PathInsertionPointProvider.INSERTION_POINT_TYPE
         PayloadPart.PathFile -> IScannerInsertionPoint.INS_URL_PATH_FILENAME
         PayloadPart.PathFolder -> IScannerInsertionPoint.INS_URL_PATH_FOLDER
         PayloadPart.Cookie -> IScannerInsertionPoint.INS_PARAM_COOKIE

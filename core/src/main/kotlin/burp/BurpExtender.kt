@@ -3,7 +3,7 @@ package burp
 import javax.swing.JTabbedPane
 import javax.swing.SwingUtilities
 
-open class BurpExtender : IBurpExtender, IExtensionStateListener {
+open class BurpExtender : IBurpExtender {
 
     private lateinit var burpExtender: IBurpExtenderCallbacks
 
@@ -20,18 +20,15 @@ open class BurpExtender : IBurpExtender, IExtensionStateListener {
         burpExtender = callbacks
         helpers = callbacks.helpers
         burpPanelHelper = BurpPanelHelper(callbacks)
-        burpCollaborator = BurpCollaborator(callbacks.createBurpCollaboratorClientContext())
+        burpCollaborator = BurpCollaborator(callbacks)
 
         callbacks.setExtensionName(EXTENSION_NAME)
         callbacks.registerScannerCheck(BurpScannerCheck(helpers, burpExtender, burpPanelHelper, burpCollaborator))
         callbacks.registerScannerInsertionPointProvider(PathInsertionPointProvider(helpers))
+        callbacks.registerScannerInsertionPointProvider(HeaderInsertionPointProvider(helpers))
         callbacks.registerScannerListener(createScannerListener())
 
         SwingUtilities.invokeLater(::initUI)
-    }
-
-    override fun extensionUnloaded() {
-        burpCollaborator.close()
     }
 
     private fun initUI() {
@@ -43,7 +40,7 @@ open class BurpExtender : IBurpExtender, IExtensionStateListener {
 
     private fun createScannerListener() = IScannerListener {
         with(it) {
-            Utilities.out("Found [$severity] issue [$issueName] from [$url]")
+            Utilities.out("[+] Found [$severity] issue [$issueName] from [$url]")
         }
     }
 
