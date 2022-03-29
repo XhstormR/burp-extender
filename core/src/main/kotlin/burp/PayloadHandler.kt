@@ -3,7 +3,7 @@ package burp
 import burp.model.Payload
 import burp.model.PayloadAction
 import burp.model.PayloadPart
-import burp.model.insertionPointType
+import burp.model.code
 import burp.spel.HttpContextEvaluator
 
 object PayloadHandler {
@@ -71,7 +71,7 @@ object PayloadHandler {
 
     private fun checkPart(part: PayloadPart, insertionPointType: Byte) = when (part) {
         PayloadPart.Any -> true
-        else -> part.insertionPointType == insertionPointType
+        else -> part.code == insertionPointType
     }
 
     private fun checkName(name: String, insertionPointName: String) = when (name) {

@@ -1,5 +1,8 @@
 package burp
 
+import burp.model.ContentType
+import burp.model.code
+
 fun IHttpRequestResponse.requestBody(bodyOffset: Int) = request.sliceArray(bodyOffset..request.lastIndex)
 fun IHttpRequestResponse.responseBody(bodyOffset: Int) = response.sliceArray(bodyOffset..response.lastIndex)
 
@@ -18,9 +21,4 @@ fun IExtensionHelpers.indexOfL(data: ByteArray, pattern: ByteArray, caseSensitiv
 fun IExtensionHelpers.indexOfR(data: ByteArray, pattern: ByteArray, caseSensitive: Boolean, from: Int, to: Int) =
     indexOf(data, pattern, caseSensitive, from, to).let { if (it == -1) it else it + pattern.size }
 
-fun HttpRequestResponseWrapper.toMarkedRequestResponse(burpExtender: IBurpExtenderCallbacks): IHttpRequestResponseWithMarkers =
-    burpExtender.applyMarkers(
-        this,
-        requestInfoWrapper.markers.merge(),
-        responseInfoWrapper.markers.merge(),
-    )
+fun IRequestInfo.getContentName() = ContentType.values().first { it.code == contentType }.name

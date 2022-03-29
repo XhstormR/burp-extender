@@ -1,7 +1,7 @@
 package burp
 
 import burp.model.PayloadPart
-import burp.model.insertionPointType
+import burp.model.code
 
 /**
 GET /{} HTTP/2
@@ -37,7 +37,7 @@ class PathInsertionPointProvider(
     }
 
     companion object {
-        val INSERTION_POINT_NAME = "${PayloadPart.PathFile.insertionPointType}|%s"
+        val INSERTION_POINT_NAME = "${PayloadPart.PathFile.code}|%s"
 
         private val INSERTION_PATTERN1 = "/".toByteArray()
         private val INSERTION_PATTERN2 = "?".toByteArray()

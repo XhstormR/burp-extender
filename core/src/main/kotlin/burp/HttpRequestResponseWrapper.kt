@@ -22,11 +22,11 @@ class HttpRequestResponseWrapper(
     ) {
         val markers = mutableListOf<IntArray>()
 
-        val all by lazy { bytes.decodeToString() }
+        val all by lazy { helpers.bytesToString(bytes) }
 
-        val body by lazy { bytes.decodeToString(bodyOffset) }
+        val body by lazy { all.substring(bodyOffset) }
 
-        val header by lazy { bytes.decodeToString(0, bodyOffset) }
+        val header by lazy { all.substring(0, bodyOffset) }
 
         private fun match(
             data: ByteArray,
@@ -73,6 +73,7 @@ class HttpRequestResponseWrapper(
         fun mark(regex: Regex): Boolean {
             val result = regex.find(all) ?: return false
             with(result) {
+                val range = if (groups.size != 1) groups[1]!!.range else range
                 markers.add(intArrayOf(range.first, range.last + 1))
             }
             return true
@@ -81,6 +82,7 @@ class HttpRequestResponseWrapper(
         fun markBody(regex: Regex): Boolean {
             val result = regex.find(body) ?: return false
             with(result) {
+                val range = if (groups.size != 1) groups[1]!!.range else range
                 markers.add(intArrayOf(range.first + bodyOffset, range.last + bodyOffset + 1))
             }
             return true
@@ -89,6 +91,7 @@ class HttpRequestResponseWrapper(
         fun markHeader(regex: Regex): Boolean {
             val result = regex.find(header) ?: return false
             with(result) {
+                val range = if (groups.size != 1) groups[1]!!.range else range
                 markers.add(intArrayOf(range.first, range.last + 1))
             }
             return true

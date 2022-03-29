@@ -11,8 +11,6 @@ open class BurpExtender : IBurpExtender {
 
     private lateinit var burpPanelHelper: BurpPanelHelper
 
-    private lateinit var burpCollaborator: BurpCollaborator
-
     override fun registerExtenderCallbacks(callbacks: IBurpExtenderCallbacks) {
         Utilities(callbacks, null, EXTENSION_NAME)
         Utilities.out("Loaded $EXTENSION_NAME v$VERSION")
@@ -20,10 +18,8 @@ open class BurpExtender : IBurpExtender {
         burpExtender = callbacks
         helpers = callbacks.helpers
         burpPanelHelper = BurpPanelHelper(callbacks)
-        burpCollaborator = BurpCollaborator(callbacks)
 
         callbacks.setExtensionName(EXTENSION_NAME)
-        callbacks.registerScannerCheck(BurpScannerCheck(helpers, burpExtender, burpPanelHelper, burpCollaborator))
         callbacks.registerScannerInsertionPointProvider(PathInsertionPointProvider(helpers))
         callbacks.registerScannerInsertionPointProvider(HeaderInsertionPointProvider(helpers))
         callbacks.registerScannerListener(createScannerListener())

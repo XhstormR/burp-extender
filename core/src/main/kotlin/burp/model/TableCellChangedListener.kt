@@ -5,9 +5,9 @@ import javax.swing.event.TableModelListener
 
 fun interface TableCellChangedListener : TableModelListener {
 
-    fun updateCell(row: Int, column: Int, source: Any)
-    fun insertCell(row: Int, column: Int, source: Any) = println("Cell $row,$column was inserted")
-    fun deleteCell(row: Int, column: Int, source: Any) = println("Cell $row,$column was deleted")
+    fun cellUpdated(row: Int, column: Int, source: Any)
+    fun cellDeleted(row: Int, column: Int, source: Any) = println("Cell $row,$column was deleted")
+    fun cellInserted(row: Int, column: Int, source: Any) = println("Cell $row,$column was inserted")
 
     override fun tableChanged(e: TableModelEvent) {
         val column = e.column
@@ -27,12 +27,12 @@ fun interface TableCellChangedListener : TableModelListener {
                     if (column == TableModelEvent.ALL_COLUMNS) {
                         println("All columns have changed")
                     } else {
-                        (firstRow..lastRow).forEach { updateCell(it, column, source) }
+                        (firstRow..lastRow).forEach { cellUpdated(it, column, source) }
                     }
                 }
             }
-            TableModelEvent.INSERT -> (firstRow..lastRow).forEach { insertCell(it, column, source) }
-            TableModelEvent.DELETE -> (firstRow..lastRow).forEach { deleteCell(it, column, source) }
+            TableModelEvent.DELETE -> (firstRow..lastRow).forEach { cellDeleted(it, column, source) }
+            TableModelEvent.INSERT -> (firstRow..lastRow).forEach { cellInserted(it, column, source) }
         }
     }
 }

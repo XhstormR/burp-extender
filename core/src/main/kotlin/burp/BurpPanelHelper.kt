@@ -2,9 +2,6 @@ package burp
 
 import burp.model.Profile
 import burp.model.ProfileTableModel
-import burp.model.ProfileType
-import burp.scanner.ActiveScanner
-import burp.scanner.PassiveScanner
 import com.typesafe.config.ConfigFactory
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
@@ -15,10 +12,7 @@ class BurpPanelHelper(
     private val burpExtender: IBurpExtenderCallbacks,
 ) : BurpPanel() {
 
-    var activeScanners = listOf<ActiveScanner>()
-    var passiveScanners = listOf<PassiveScanner>()
-
-    private val profileTableModel = ProfileTableModel()
+    private val profileTableModel = ProfileTableModel(burpExtender)
 
     init {
         profileTable.model = profileTableModel
@@ -53,7 +47,6 @@ class BurpPanelHelper(
                 .toSet()
 
             profileTableModel.setData(profiles)
-            updateScanner(profiles)
             updateProfileWidth(ProfileTableModel.PROFILE_COLUMWIDTHS)
 
             Utilities.out("Loaded profiles [${profiles.joinToString { it.name }}] from [${directoryField.text}]")
@@ -61,18 +54,6 @@ class BurpPanelHelper(
             Utilities.err("Failed to load profiles from [${directoryField.text}]")
             Utilities.err(e.stackTraceToString())
         }
-    }
-
-    private fun updateScanner(profiles: Collection<Profile>) {
-        profiles
-            .filter { it.enabled }
-            .groupBy { it.type }
-            .forEach { (k, v) ->
-                when (k) {
-                    ProfileType.Active -> activeScanners = v.map { ActiveScanner(it, burpExtender) }
-                    ProfileType.Passive -> passiveScanners = v.map { PassiveScanner(it, burpExtender) }
-                }
-            }
     }
 
     private fun updateProfileWidth(percentages: Array<Double>) {

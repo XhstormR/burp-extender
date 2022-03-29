@@ -101,6 +101,9 @@ class Tests {
         Assertions.assertFalse(and.evaluate(oneTrue) { it })
         Assertions.assertTrue(and.evaluate(allTrue) { it })
         Assertions.assertFalse(and.evaluate(allFalse) { it })
+
+        Assertions.assertFalse(or.evaluate(listOf(), ::TODO))
+        Assertions.assertTrue(and.evaluate(listOf(), ::TODO))
     }
 
     @Test

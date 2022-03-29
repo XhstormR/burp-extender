@@ -1,5 +1,6 @@
 package burp.model
 
+import burp.IRequestInfo
 import burp.IScannerInsertionPoint
 import kotlinx.serialization.Serializable
 
@@ -65,7 +66,7 @@ enum class Confidence {
 
 enum class PayloadPart {
     Any, // *
-    Url, // url query value: ?id={}
+    Url, // url query value: ?name={}
     Xml, //
     Json,
     Form,
@@ -74,7 +75,7 @@ enum class PayloadPart {
     PathFolder, // path brust: /{}/pet/123/
     Cookie,
     Header, // request header: User-Agent: {}
-    NameUrl, // url query key: ?id=9527&{}=1
+    NameUrl, // url query key: ?name=9527&{}=1
     NameForm;
 }
 
@@ -84,19 +85,33 @@ enum class PayloadAction {
     Replace; // 替换
 }
 
-enum class MatcherPart {
-    Url,
-    Method,
-    Request,
-    RequestBody,
-    RequestHeader,
+enum class MatcherPart(val isRequest: Boolean) {
+    Url(true),
+    Host(true),
+    Path(true),
+    Query(true),
+    Method(true),
+    ContentType(true),
+    Request(true),
+    RequestBody(true),
+    RequestHeader(true),
 
-    Status,
-    Response,
-    ResponseTime,
-    ResponseType,
-    ResponseBody,
-    ResponseHeader;
+    Status(false),
+    ResponseTime(false),
+    ResponseType(false),
+    Response(false),
+    ResponseBody(false),
+    ResponseHeader(false);
+}
+
+enum class ContentType {
+    None,
+    UrlEncoded,
+    MultiPart,
+    XML,
+    JSON,
+    AMF,
+    Unknown;
 }
 
 enum class MatcherType {
@@ -125,12 +140,7 @@ fun <T> ConditionType.evaluate(list: List<T>, predicate: (T) -> Boolean) = when 
     ConditionType.And -> list.all(predicate)
 }
 
-const val LINE_BREAK = "<br>"
-
-val ProfileDetail.issueDetail: String
-    get() = description + LINE_BREAK.repeat(2) + links.joinToString(LINE_BREAK)
-
-val PayloadPart.insertionPointType
+val PayloadPart.code
     get() = when (this) {
         PayloadPart.Any -> Byte.MIN_VALUE
         PayloadPart.Url -> IScannerInsertionPoint.INS_PARAM_URL
@@ -145,3 +155,34 @@ val PayloadPart.insertionPointType
         PayloadPart.NameUrl -> IScannerInsertionPoint.INS_PARAM_NAME_URL
         PayloadPart.NameForm -> IScannerInsertionPoint.INS_PARAM_NAME_BODY
     }
+
+val ContentType.code
+    get() = when (this) {
+        ContentType.None -> IRequestInfo.CONTENT_TYPE_NONE
+        ContentType.UrlEncoded -> IRequestInfo.CONTENT_TYPE_URL_ENCODED
+        ContentType.MultiPart -> IRequestInfo.CONTENT_TYPE_MULTIPART
+        ContentType.XML -> IRequestInfo.CONTENT_TYPE_XML
+        ContentType.JSON -> IRequestInfo.CONTENT_TYPE_JSON
+        ContentType.AMF -> IRequestInfo.CONTENT_TYPE_AMF
+        ContentType.Unknown -> IRequestInfo.CONTENT_TYPE_UNKNOWN
+    }
+
+/*
+INS_PARAM_URL: 0
+INS_PARAM_BODY: 1
+INS_PARAM_COOKIE: 2
+INS_PARAM_XML: 3
+INS_PARAM_XML_ATTR: 4
+INS_PARAM_MULTIPART_ATTR: 5
+INS_PARAM_JSON: 6
+INS_PARAM_AMF: 7
+INS_HEADER: 32
+INS_URL_PATH_FOLDER: 33
+INS_PARAM_NAME_URL: 34
+INS_PARAM_NAME_BODY: 35
+INS_ENTIRE_BODY: 36
+INS_URL_PATH_FILENAME: 37
+INS_USER_PROVIDED: 64
+INS_EXTENSION_PROVIDED: 65
+INS_UNKNOWN: 127
+*/

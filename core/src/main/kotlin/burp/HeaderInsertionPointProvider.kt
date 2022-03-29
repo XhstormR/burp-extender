@@ -1,7 +1,7 @@
 package burp
 
 import burp.model.PayloadPart
-import burp.model.insertionPointType
+import burp.model.code
 
 class HeaderInsertionPointProvider(
     private val helpers: IExtensionHelpers,
@@ -29,7 +29,7 @@ class HeaderInsertionPointProvider(
     }
 
     companion object {
-        val INSERTION_POINT_NAME = "${PayloadPart.Header.insertionPointType}|Origin"
+        val INSERTION_POINT_NAME = "${PayloadPart.Header.code}|Origin"
 
         private val INSERTION_PATTERN1 = "Origin: ".toByteArray()
         private val INSERTION_PATTERN2 = "\r\n".toByteArray()

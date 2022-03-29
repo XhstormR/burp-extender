@@ -9,12 +9,12 @@ data class ScanIssue(
     private val url: URL,
     private val issueName: String,
     private val issueDetail: String,
+    private val issueBackground: String,
     private val severity: Severity,
     private val confidence: Confidence,
     private val httpService: IHttpService,
     private val httpMessages: Array<IHttpRequestResponse>,
     private val issueType: Int = 0x08000000,
-    private val issueBackground: String? = null,
     private val remediationDetail: String? = null,
     private val remediationBackground: String? = null,
 ) : IScanIssue {
