@@ -76,7 +76,8 @@ enum class PayloadPart {
     Cookie,
     Header, // request header: User-Agent: {}
     NameUrl, // url query key: ?name=9527&{}=1
-    NameForm;
+    NameForm,
+    NameCookie;
 }
 
 enum class PayloadAction {
@@ -154,6 +155,7 @@ val PayloadPart.code
         PayloadPart.Header -> IScannerInsertionPoint.INS_HEADER
         PayloadPart.NameUrl -> IScannerInsertionPoint.INS_PARAM_NAME_URL
         PayloadPart.NameForm -> IScannerInsertionPoint.INS_PARAM_NAME_BODY
+        PayloadPart.NameCookie -> (Byte.MIN_VALUE + 1).toByte()
     }
 
 val ContentType.code

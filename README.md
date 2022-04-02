@@ -19,7 +19,7 @@
 - [Single-extension scan](#single-extension-scan)
 - [Reference](#reference)
 
-一款 Burp Suite 插件，使用外部的配置文件来定义扫描器规则，扫描规则主要分为两类：主动扫描和被动扫描。
+一款 Burp Suite 插件，使用外部的配置文件来定义扫描器规则，扫描规则主要分为两类：主动扫描和被动扫描。 详细使用示例可以参考 `./assets/profiles/` 文件夹。
 
 ## Configuration File Format
 
@@ -132,7 +132,7 @@ rules = []
 
 匹配规则
 
-对于主动扫描，只有当请求类匹配点满足条件时，才会发送请求。
+对于主动扫描，首先会检查请求类匹配点，满足条件后才会发送请求，之后再检查响应类匹配点。
 
 ```yaml
 {
@@ -232,6 +232,7 @@ rules = []
 ```
 POST /v2/pet?debug=true&proxy=true HTTP/2
 Host: petstore.swagger.io
+Cookie: RK=LVg8IU4rbe; ariaDefaultTheme=undefined; iip=0
 Content-Length: 215
 Sec-Ch-Ua: "(Not(A:Brand";v="8", "Chromium";v="99", "Google Chrome";v="99"
 Accept: application/json
@@ -279,6 +280,7 @@ Accept-Language: zh-CN,zh;q=0.9
 * `Header`: a
 * `NameUrl`: a
 * `NameForm`: a
+* `NameCookie`: a
 
 ### MatcherPart
 
@@ -289,6 +291,7 @@ Accept-Language: zh-CN,zh;q=0.9
 ```
 POST /v2/pet?debug=true&proxy=true HTTP/2
 Host: petstore.swagger.io
+Cookie: RK=LVg8IU4rbe; ariaDefaultTheme=undefined; iip=0
 Content-Length: 215
 Sec-Ch-Ua: "(Not(A:Brand";v="8", "Chromium";v="99", "Google Chrome";v="99"
 Accept: application/json

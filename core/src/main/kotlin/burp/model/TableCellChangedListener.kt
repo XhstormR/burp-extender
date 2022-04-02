@@ -19,13 +19,13 @@ fun interface TableCellChangedListener : TableModelListener {
             TableModelEvent.UPDATE -> {
                 if (firstRow == TableModelEvent.HEADER_ROW) {
                     if (column == TableModelEvent.ALL_COLUMNS) {
-                        println("A column was added")
+                        // println("A column was added")
                     } else {
-                        println("$column in header changed")
+                        // println("$column in header changed")
                     }
                 } else {
                     if (column == TableModelEvent.ALL_COLUMNS) {
-                        println("All columns have changed")
+                        // println("All columns have changed")
                     } else {
                         (firstRow..lastRow).forEach { cellUpdated(it, column, source) }
                     }

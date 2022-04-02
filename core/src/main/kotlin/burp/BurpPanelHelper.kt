@@ -47,6 +47,7 @@ class BurpPanelHelper(
                 .toSet()
 
             profileTableModel.setData(profiles)
+            profileTable.rowSorter.toggleSortOrder(1)
             updateProfileWidth(ProfileTableModel.PROFILE_COLUMWIDTHS)
 
             Utilities.out("Loaded profiles [${profiles.joinToString { it.name }}] from [${directoryField.text}]")

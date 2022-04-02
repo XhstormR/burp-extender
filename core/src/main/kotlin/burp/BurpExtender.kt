@@ -22,6 +22,7 @@ open class BurpExtender : IBurpExtender {
         callbacks.setExtensionName(EXTENSION_NAME)
         callbacks.registerScannerInsertionPointProvider(PathInsertionPointProvider(helpers))
         callbacks.registerScannerInsertionPointProvider(HeaderInsertionPointProvider(helpers))
+        callbacks.registerScannerInsertionPointProvider(CookieInsertionPointProvider(helpers))
         callbacks.registerScannerListener(createScannerListener())
 
         SwingUtilities.invokeLater(::initUI)

@@ -222,10 +222,12 @@ class BurpScannerCheck(
             $responseDetail
         """.trimIndent()
 
-        val linkList = detail.links.joinToString("") { "<li>$it</li>" }
+        val linkList = detail.links
+            .takeIf { it.isNotEmpty() }
+            ?.joinToString("", "<ul>", "</ul>") { """<li><a href="$it">$it</a></li>""" } ?: ""
         val issueBackground = """
             <p>${detail.description}</p>
-            <ul>$linkList</ul>
+            $linkList
         """.trimIndent()
 
         return ScanIssue(

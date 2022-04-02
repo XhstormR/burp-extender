@@ -26,7 +26,7 @@ class Tests {
 
     @Test
     fun test1() {
-        val profile = ConfigFactory.load("profile/passive-example.conf")
+        val profile = ConfigFactory.load("profile/poc-passive-example.conf")
             .let { Hocon.decodeFromConfig<Profile>(it) }
         println(profile)
     }
@@ -141,6 +141,17 @@ class Tests {
         val version = matchResult.groups["version"]?.value
         val build = matchResult.groups["build"]?.value
         println("checkver: $version-$build")
+    }
+
+    @Test
+    fun regex3() {
+        val ok = """/v2/pet.js"""
+        val no = """/v2/pet.jsp"""
+        val pattern = """\.(?:apk|avi|bmp|css|doc|docx|eot|exe|flv|gif|ico|jpeg|jpg|js|m3u8|mp3|mp4|ogg|pdf|png|ppt|pptx|svg|swf|tat|ts|ttf|wma|wmv|woff|woff2|xls|xlsx|zip)$"""
+        val regex = pattern.toRegex()
+
+        Assertions.assertNotNull(regex.find(ok))
+        Assertions.assertNull(regex.find(no))
     }
 
     @Test
