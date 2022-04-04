@@ -148,11 +148,11 @@ class BurpScannerCheck(
         matchers: List<Matcher>,
         matchersCondition: ConditionType,
         evaluator: HttpContextEvaluator,
-    ) = matchersCondition.evaluate(matchers) { (part, type, values, negative, caseSensitive, condition) ->
+    ) = matchersCondition.evaluate(matchers) { (part, type, values, greedy, negative, caseSensitive, condition) ->
         val request = http.requestInfoWrapper
         val response = http.responseInfoWrapper
         values.mapNotNull { evaluator.evaluate(it) }.let {
-            condition.evaluate(it) { value ->
+            condition.evaluate(it, greedy) { value ->
                 val ret = when (type) {
                     MatcherType.Word -> {
                         when (part) {
@@ -161,7 +161,7 @@ class BurpScannerCheck(
                             MatcherPart.Path -> request.url.path.contains(value, caseSensitive)
                             MatcherPart.Query -> request.url.query.contains(value, caseSensitive)
                             MatcherPart.Method -> request.method.contains(value, caseSensitive)
-                            MatcherPart.ContentType -> request.getContentName().contains(value, caseSensitive)
+                            MatcherPart.ContentType -> request.getContentTypeName().contains(value, caseSensitive)
                             MatcherPart.Request -> request.mark(value, caseSensitive)
                             MatcherPart.RequestBody -> request.markBody(value, caseSensitive)
                             MatcherPart.RequestHeader -> request.markHeader(value, caseSensitive)
@@ -181,7 +181,7 @@ class BurpScannerCheck(
                             MatcherPart.Path -> request.url.path.contains(regex)
                             MatcherPart.Query -> request.url.query.contains(regex)
                             MatcherPart.Method -> request.method.contains(regex)
-                            MatcherPart.ContentType -> request.getContentName().contains(regex)
+                            MatcherPart.ContentType -> request.getContentTypeName().contains(regex)
                             MatcherPart.Request -> request.mark(regex)
                             MatcherPart.RequestBody -> request.markBody(regex)
                             MatcherPart.RequestHeader -> request.markHeader(regex)

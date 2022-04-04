@@ -139,6 +139,7 @@ rules = []
     part = RequestHeader
     type = Word
     condition = Or
+    greedy = false
     negative = false
     caseSensitive = false
     values = [
@@ -153,6 +154,8 @@ rules = []
     * 匹配值类型，默认值 `Word`
 * `values`: [string]
     * 匹配值
+* `greedy`: true | false
+    * 是否尽可能多的获取匹配值（贪婪模式），当条件匹配成功后，会继续尝试剩下的匹配值，默认值 `false`
 * `negative`: true | false
     * 是否取反匹配结果，默认值 `false`
 * `caseSensitive`: true | false

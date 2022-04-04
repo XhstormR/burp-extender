@@ -21,4 +21,4 @@ fun IExtensionHelpers.indexOfL(data: ByteArray, pattern: ByteArray, caseSensitiv
 fun IExtensionHelpers.indexOfR(data: ByteArray, pattern: ByteArray, caseSensitive: Boolean, from: Int, to: Int) =
     indexOf(data, pattern, caseSensitive, from, to).let { if (it == -1) it else it + pattern.size }
 
-fun IRequestInfo.getContentName() = ContentType.values().first { it.code == contentType }.name
+fun IRequestInfo.getContentTypeName() = ContentType.values().first { it.code == contentType }.name

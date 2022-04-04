@@ -46,6 +46,7 @@ data class Matcher(
     val part: MatcherPart,
     val type: MatcherType = MatcherType.Word,
     val values: List<String>,
+    val greedy: Boolean = false,
     val negative: Boolean = false,
     val caseSensitive: Boolean = false,
     val condition: ConditionType = ConditionType.Or,
@@ -131,13 +132,13 @@ enum class ProfileType {
     Passive;
 }
 
-fun <T> ConditionType.evaluate(array: Array<T>, predicate: (T) -> Boolean) = when (this) {
-    ConditionType.Or -> array.any(predicate)
+fun <T> ConditionType.evaluate(array: Array<T>, greedy: Boolean = false, predicate: (T) -> Boolean) = when (this) {
+    ConditionType.Or -> if (greedy) array.fold(false) { acc, obj -> predicate(obj) || acc } else array.any(predicate)
     ConditionType.And -> array.all(predicate)
 }
 
-fun <T> ConditionType.evaluate(list: List<T>, predicate: (T) -> Boolean) = when (this) {
-    ConditionType.Or -> list.any(predicate)
+fun <T> ConditionType.evaluate(list: List<T>, greedy: Boolean = false, predicate: (T) -> Boolean) = when (this) {
+    ConditionType.Or -> if (greedy) list.fold(false) { acc, obj -> predicate(obj) || acc } else list.any(predicate)
     ConditionType.And -> list.all(predicate)
 }
 

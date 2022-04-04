@@ -94,16 +94,21 @@ class Tests {
         val or = ConditionType.Or
         val and = ConditionType.And
 
-        Assertions.assertTrue(or.evaluate(oneTrue) { it })
-        Assertions.assertTrue(or.evaluate(allTrue) { it })
-        Assertions.assertFalse(or.evaluate(allFalse) { it })
+        Assertions.assertTrue(or.evaluate(oneTrue, true) { it })
+        Assertions.assertTrue(or.evaluate(allTrue, true) { it })
+        Assertions.assertFalse(or.evaluate(allFalse, true) { it })
+        Assertions.assertTrue(or.evaluate(oneTrue, false) { it })
+        Assertions.assertTrue(or.evaluate(allTrue, false) { it })
+        Assertions.assertFalse(or.evaluate(allFalse, false) { it })
 
         Assertions.assertFalse(and.evaluate(oneTrue) { it })
         Assertions.assertTrue(and.evaluate(allTrue) { it })
         Assertions.assertFalse(and.evaluate(allFalse) { it })
 
-        Assertions.assertFalse(or.evaluate(listOf(), ::TODO))
-        Assertions.assertTrue(and.evaluate(listOf(), ::TODO))
+        Assertions.assertFalse(or.evaluate(listOf(), true, ::TODO))
+        Assertions.assertTrue(and.evaluate(listOf(), true, ::TODO))
+        Assertions.assertFalse(or.evaluate(listOf(), false, ::TODO))
+        Assertions.assertTrue(and.evaluate(listOf(), false, ::TODO))
     }
 
     @Test
