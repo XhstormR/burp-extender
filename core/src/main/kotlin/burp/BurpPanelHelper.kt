@@ -18,6 +18,7 @@ class BurpPanelHelper(
         profileTable.model = profileTableModel
 
         reloadButton.addActionListener { loadProfilePath() }
+        invertButton.addActionListener { profileTableModel.invertSelected() }
         directoryButton.addActionListener { selectProfilePath() }
         directoryField.document.addUndoableEditListener { loadProfilePath() }
 

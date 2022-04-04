@@ -26,21 +26,29 @@ class ProfileTableModel(
         setScanner(profiles)
     }
 
+    fun invertSelected() {
+        for (row in 0 until rowCount) {
+            setValueAt(isSelected(row).not(), row, 0)
+        }
+    }
+
+    private fun isSelected(row: Int) = getValueAt(row, 0).toString().toBoolean()
+
     private fun setScanner(profiles: Collection<Profile>) {
-        scanners.forEach { burpExtender.removeScannerCheck(it) }
+        scanners.forEach { enableScanner(it, false) }
         scanners = profiles.map { BurpScannerCheck(it, burpExtender, burpCollaborator) }
         scanners
             .filter { it.profile.enabled }
-            .forEach { burpExtender.registerScannerCheck(it) }
+            .forEach { enableScanner(it) }
+    }
+
+    private fun enableScanner(scanner: BurpScannerCheck, enabled: Boolean = true) {
+        if (enabled) burpExtender.registerScannerCheck(scanner)
+        else burpExtender.removeScannerCheck(scanner)
     }
 
     private fun cellUpdated(row: Int, column: Int, source: Any) = when (column) {
-        0 -> {
-            val scanner = scanners[row]
-            val enabled = getValueAt(row, column).toString().toBoolean()
-            if (enabled) burpExtender.registerScannerCheck(scanner)
-            else burpExtender.removeScannerCheck(scanner)
-        }
+        0 -> enableScanner(scanners[row], isSelected(row))
         else -> {}
     }
 

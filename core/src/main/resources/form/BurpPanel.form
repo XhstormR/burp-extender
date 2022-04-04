@@ -39,6 +39,12 @@
                   <text value="Reload"/>
                 </properties>
               </component>
+              <component id="d0ab9" class="javax.swing.JButton" binding="invertButton">
+                <constraints/>
+                <properties>
+                  <text value="Invert"/>
+                </properties>
+              </component>
             </children>
           </grid>
           <component id="c6535" class="javax.swing.JSeparator">
