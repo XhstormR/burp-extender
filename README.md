@@ -1,4 +1,4 @@
-# burp-extender
+# Scanner++
 
 - [Configuration File Format](#configuration-file-format)
     * [Profile](#profile)
@@ -18,6 +18,8 @@
     * [MatcherType](#matchertype)
 - [Single-extension scan](#single-extension-scan)
 - [Reference](#reference)
+
+![](./assets/gui.png)
 
 一款 Burp Suite 插件，使用外部的配置文件来定义扫描器规则，扫描规则主要分为两类：主动扫描和被动扫描。 详细使用示例可以参考 `./assets/profiles/` 文件夹。
 
@@ -235,13 +237,13 @@ rules = []
 ```
 POST /v2/pet?debug=true&proxy=true HTTP/2
 Host: petstore.swagger.io
-Cookie: RK=LVg8IU4rbe; ariaDefaultTheme=undefined; iip=0
+Cookie: RK=LVg8IU4rbe; iip=0
 Content-Length: 215
-Sec-Ch-Ua: "(Not(A:Brand";v="8", "Chromium";v="99", "Google Chrome";v="99"
+Sec-Ch-Ua: " Not A;Brand";v="99", "Chromium";v="100", "Google Chrome";v="100"
 Accept: application/json
 Content-Type: application/json
 Sec-Ch-Ua-Mobile: ?0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36
 Sec-Ch-Ua-Platform: "macOS"
 Origin: https://petstore.swagger.io
 Sec-Fetch-Site: same-origin
@@ -270,20 +272,20 @@ Accept-Language: zh-CN,zh;q=0.9
   "status": "available"
 }
 ```
-
+*
 * `Any`: 任意插入点
-* `Url`: a
-* `Xml`: a
-* `Json`: a
-* `Form`: a
-* `Body`: a
-* `PathFile`: a
-* `PathFolder`: a
-* `Cookie`: a
-* `Header`: a
-* `NameUrl`: a
-* `NameForm`: a
-* `NameCookie`: a
+* `Url`: 将 URL 参数值作为插入点，eg.`?debug={}&proxy={}`
+* `Xml`: 将 Xml 参数值作为插入点
+* `Json`: 将 Json 参数值作为插入点，eg.`{"id":{},"category":{"id":{},"name":{}},"name":{},...}`
+* `Form`: 将 Form 参数值作为插入点，eg.`custname={}&custtel={}`
+* `Body`: 将整个 Json Body 作为插入点
+* `PathFile`: 将整个 Path 作为插入点，可用于目录爆破，eg.`/{}/{}`
+* `PathFolder`: 将 Path 文件夹作为插入点，可用于越权测试，eg.`/{}/pet`
+* `Cookie`: 将 Cookie 参数值作为插入点，eg.`Cookie: RK={}; iip={}`
+* `Header`: 将 Header 值作为插入点，eg.`User-Agent: {}`
+* `NameUrl`: 将 URL 参数名作为插入点，eg.`?debug=true&proxy=true&{}=1`
+* `NameForm`: 将 Form 参数名作为插入点，eg.`custname=test&custtel=1234&{}=1`
+* `NameCookie`: 将 Cookie 参数名作为插入点，eg.`Cookie: RK=LVg8IU4rbe; iip=0; {}=1`
 
 ### MatcherPart
 
@@ -294,13 +296,13 @@ Accept-Language: zh-CN,zh;q=0.9
 ```
 POST /v2/pet?debug=true&proxy=true HTTP/2
 Host: petstore.swagger.io
-Cookie: RK=LVg8IU4rbe; ariaDefaultTheme=undefined; iip=0
+Cookie: RK=LVg8IU4rbe; iip=0
 Content-Length: 215
-Sec-Ch-Ua: "(Not(A:Brand";v="8", "Chromium";v="99", "Google Chrome";v="99"
+Sec-Ch-Ua: " Not A;Brand";v="99", "Chromium";v="100", "Google Chrome";v="100"
 Accept: application/json
 Content-Type: application/json
 Sec-Ch-Ua-Mobile: ?0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.84 Safari/537.36
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36
 Sec-Ch-Ua-Platform: "macOS"
 Origin: https://petstore.swagger.io
 Sec-Fetch-Site: same-origin

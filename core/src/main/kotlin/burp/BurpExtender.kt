@@ -49,7 +49,7 @@ open class BurpExtender : IBurpExtender {
     }
 
     companion object {
-        private const val EXTENSION_NAME = "Burp Extender"
+        private const val EXTENSION_NAME = "Scanner++"
         private const val VERSION = "1.0"
     }
 }

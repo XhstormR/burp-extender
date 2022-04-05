@@ -72,11 +72,11 @@ enum class PayloadPart {
     Json,
     Form,
     Body,
-    PathFile, // path brust: /v2/pet/123/{}
-    PathFolder, // path brust: /{}/pet/123/
+    PathFile,
+    PathFolder,
     Cookie,
-    Header, // request header: User-Agent: {}
-    NameUrl, // url query key: ?name=9527&{}=1
+    Header,
+    NameUrl,
     NameForm,
     NameCookie;
 }
