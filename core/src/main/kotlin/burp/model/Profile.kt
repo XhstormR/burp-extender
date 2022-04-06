@@ -91,6 +91,7 @@ enum class PayloadAction {
 enum class MatcherPart(val isRequest: Boolean) {
     Url(true),
     Host(true),
+    Port(true),
     Path(true),
     Query(true),
     Method(true),

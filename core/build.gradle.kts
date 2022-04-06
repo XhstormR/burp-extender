@@ -22,10 +22,6 @@ dependencies {
 }
 
 tasks {
-    withType<Test> {
-        useJUnitPlatform()
-    }
-
     withType<Jar> {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         from(configurations.runtimeClasspath.get().map { zipTree(it) })

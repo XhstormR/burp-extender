@@ -1,4 +1,4 @@
-rootProject.name = "burp-extender"
+rootProject.name = "scanner-plus-plus"
 
 include("core")
 

@@ -158,6 +158,7 @@ class BurpScannerCheck(
                         when (part) {
                             MatcherPart.Url -> request.url.toString().contains(value, caseSensitive)
                             MatcherPart.Host -> request.url.host.contains(value, caseSensitive)
+                            MatcherPart.Port -> request.url.port.toString() == value
                             MatcherPart.Path -> request.url.path.contains(value, caseSensitive)
                             MatcherPart.Query -> request.url.query.contains(value, caseSensitive)
                             MatcherPart.Method -> request.method.contains(value, caseSensitive)
@@ -178,6 +179,7 @@ class BurpScannerCheck(
                         when (part) {
                             MatcherPart.Url -> request.url.toString().contains(regex)
                             MatcherPart.Host -> request.url.host.contains(regex)
+                            MatcherPart.Port -> request.url.port.toString().contains(regex)
                             MatcherPart.Path -> request.url.path.contains(regex)
                             MatcherPart.Query -> request.url.query.contains(regex)
                             MatcherPart.Method -> request.method.contains(regex)

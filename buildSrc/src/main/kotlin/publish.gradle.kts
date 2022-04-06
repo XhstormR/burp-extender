@@ -24,7 +24,7 @@ publishing {
             pom {
                 name.set(project.name)
                 description.set(project.name)
-                url.set("https://github.com/XhstormR/burp-extender")
+                url.set("https://github.com/XhstormR/scanner-plus-plus")
                 licenses {
                     license {
                         name.set("The Apache License, Version 2.0")
@@ -39,9 +39,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git@github.com:XhstormR/burp-extender.git")
-                    developerConnection.set("scm:git:git@github.com:XhstormR/burp-extender.git")
-                    url.set("https://github.com/XhstormR/burp-extender")
+                    connection.set("scm:git:git@github.com:XhstormR/scanner-plus-plus.git")
+                    developerConnection.set("scm:git:git@github.com:XhstormR/scanner-plus-plus.git")
+                    url.set("https://github.com/XhstormR/scanner-plus-plus")
                 }
             }
         }

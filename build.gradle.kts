@@ -20,7 +20,7 @@ nexusPublishing {
 
 allprojects {
 
-    group = "io.github.xhstormr.burp-extender"
+    group = "io.github.xhstormr.scanner-plus-plus"
     version = "1.0-SNAPSHOT"
 
     repositories {
@@ -33,6 +33,10 @@ allprojects {
     }
 
     tasks {
+        withType<Test> {
+            useJUnitPlatform()
+        }
+
         withType<KotlinCompile> {
             kotlinOptions {
                 jvmTarget = "11"
