@@ -66,12 +66,13 @@ enum class Confidence {
 }
 
 enum class PayloadPart {
-    Any, // *
-    Url, // url query value: ?name={}
-    Xml, //
+    Any,
+    Url,
+    Xml,
     Json,
     Form,
     Body,
+    Path,
     PathFile,
     PathFolder,
     Cookie,
@@ -150,6 +151,7 @@ val PayloadPart.code
         PayloadPart.Json -> IScannerInsertionPoint.INS_PARAM_JSON
         PayloadPart.Form -> IScannerInsertionPoint.INS_PARAM_BODY
         PayloadPart.Body -> IScannerInsertionPoint.INS_ENTIRE_BODY
+        PayloadPart.Path -> (Byte.MIN_VALUE + 2).toByte()
         PayloadPart.PathFile -> IScannerInsertionPoint.INS_URL_PATH_FILENAME
         PayloadPart.PathFolder -> IScannerInsertionPoint.INS_URL_PATH_FOLDER
         PayloadPart.Cookie -> IScannerInsertionPoint.INS_PARAM_COOKIE

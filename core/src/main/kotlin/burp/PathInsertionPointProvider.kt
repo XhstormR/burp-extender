@@ -37,7 +37,7 @@ class PathInsertionPointProvider(
     }
 
     companion object {
-        val INSERTION_POINT_NAME = "${PayloadPart.PathFile.code}|%s"
+        val INSERTION_POINT_NAME = "${PayloadPart.Path.code}|%s"
 
         private val INSERTION_PATTERN1 = "/".toByteArray()
         private val INSERTION_PATTERN2 = "?".toByteArray()

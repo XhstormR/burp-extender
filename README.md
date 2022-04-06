@@ -272,15 +272,16 @@ Accept-Language: zh-CN,zh;q=0.9
   "status": "available"
 }
 ```
-*
+
 * `Any`: 任意插入点
 * `Url`: 将 URL 参数值作为插入点，eg.`?debug={}&proxy={}`
 * `Xml`: 将 Xml 参数值作为插入点
 * `Json`: 将 Json 参数值作为插入点，eg.`{"id":{},"category":{"id":{},"name":{}},"name":{},...}`
 * `Form`: 将 Form 参数值作为插入点，eg.`custname={}&custtel={}`
 * `Body`: 将整个 Json Body 作为插入点
-* `PathFile`: 将整个 Path 作为插入点，可用于目录爆破，eg.`/{}/{}`
-* `PathFolder`: 将 Path 文件夹作为插入点，可用于越权测试，eg.`/{}/pet`
+* `Path`: 将整个 Path 作为插入点，多用于目录爆破，eg.`/{}/{}`
+* `PathFile`: 将 Path 文件作为插入点，多用于越权测试，eg.`/v2/{}`
+* `PathFolder`: 将 Path 文件夹作为插入点，多用于越权测试，eg.`/{}/pet`
 * `Cookie`: 将 Cookie 参数值作为插入点，eg.`Cookie: RK={}; iip={}`
 * `Header`: 将 Header 值作为插入点，eg.`User-Agent: {}`
 * `NameUrl`: 将 URL 参数名作为插入点，eg.`?debug=true&proxy=true&{}=1`
