@@ -285,6 +285,7 @@ Accept-Language: zh-CN,zh;q=0.9
 * `Cookie`: 将 Cookie 参数值作为插入点，eg.`Cookie: RK={}; iip={}`
 * `Header`: 将 Header 值作为插入点，eg.`User-Agent: {}`
 * `NameUrl`: 将 URL 参数名作为插入点，eg.`?debug=true&proxy=true&{}=1`
+* `NameUrlRaw`: 将 URL 参数名作为插入点（无编码操作），eg.`?debug=true&proxy=true&{}=1`
 * `NameForm`: 将 Form 参数名作为插入点，eg.`custname=test&custtel=1234&{}=1`
 * `NameCookie`: 将 Cookie 参数名作为插入点，eg.`Cookie: RK=LVg8IU4rbe; iip=0; {}=1`
 

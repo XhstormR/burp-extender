@@ -78,6 +78,7 @@ enum class PayloadPart {
     Cookie,
     Header,
     NameUrl,
+    NameUrlRaw,
     NameForm,
     NameCookie;
 }
@@ -158,6 +159,7 @@ val PayloadPart.code
         PayloadPart.Cookie -> IScannerInsertionPoint.INS_PARAM_COOKIE
         PayloadPart.Header -> IScannerInsertionPoint.INS_HEADER
         PayloadPart.NameUrl -> IScannerInsertionPoint.INS_PARAM_NAME_URL
+        PayloadPart.NameUrlRaw -> (Byte.MIN_VALUE + 3).toByte()
         PayloadPart.NameForm -> IScannerInsertionPoint.INS_PARAM_NAME_BODY
         PayloadPart.NameCookie -> (Byte.MIN_VALUE + 1).toByte()
     }
