@@ -17,7 +17,7 @@ import java.io.PrintWriter
 class BurpScannerCheck(
     val profile: Profile,
     private val burpExtender: IBurpExtenderCallbacks,
-    private val burpCollaborator: BurpCollaborator,
+    private val burpCollaboratorClient: BurpCollaboratorClient,
 ) : IScannerCheck {
 
     private val helpers = burpExtender.helpers
@@ -106,7 +106,7 @@ class BurpScannerCheck(
         val pass = rulesCondition.evaluate(rules) { (payload, headers, matchers, matchersCondition) ->
             if (!preMatch(http, matchers, matchersCondition, evaluator)) return@evaluate false
 
-            val checkRequests = PayloadHandler.handle(payload, insertionPoint, evaluator, headers, burpCollaborator)
+            val checkRequests = PayloadHandler.handle(payload, insertionPoint, evaluator, headers, burpCollaboratorClient)
                 ?: return@evaluate false
 
             ConditionType.Or.evaluate(checkRequests) { checkRequest ->
@@ -119,7 +119,7 @@ class BurpScannerCheck(
                     .apply { requestInfoWrapper.markers.addAll(http.requestInfoWrapper.markers) }
                     .apply { responseInfoWrapper.responseTime = responseTime }
 
-                checkRequest.oobId?.let { oobId -> burpCollaborator.registerOutOfBandData(oobId, toScanIssue(name, detail, http)) }
+                checkRequest.oobId?.let { oobId -> burpCollaboratorClient.registerOutOfBandData(oobId, toScanIssue(name, detail, http)) }
                 postMatch(http, matchers, matchersCondition, evaluator)
             }
         }

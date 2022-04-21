@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class BurpCollaborator(
+class BurpCollaboratorClient(
     private val burpExtender: IBurpExtenderCallbacks,
     base: IBurpCollaboratorClientContext = burpExtender.createBurpCollaboratorClientContext(),
 ) : IBurpCollaboratorClientContext by base,

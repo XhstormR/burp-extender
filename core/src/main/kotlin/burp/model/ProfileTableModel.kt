@@ -1,6 +1,6 @@
 package burp.model
 
-import burp.BurpCollaborator
+import burp.BurpCollaboratorClient
 import burp.BurpScannerCheck
 import burp.IBurpExtenderCallbacks
 import burp.clazz
@@ -10,7 +10,7 @@ class ProfileTableModel(
     private val burpExtender: IBurpExtenderCallbacks,
 ) : DefaultTableModel(PROFILE_COLUMNNAMES, 0) {
 
-    private val burpCollaborator = BurpCollaborator(burpExtender)
+    private val burpCollaboratorClient = BurpCollaboratorClient(burpExtender)
 
     private var scanners = listOf<BurpScannerCheck>()
 
@@ -36,7 +36,7 @@ class ProfileTableModel(
 
     private fun setScanner(profiles: Collection<Profile>) {
         scanners.forEach { enableScanner(it, false) }
-        scanners = profiles.map { BurpScannerCheck(it, burpExtender, burpCollaborator) }
+        scanners = profiles.map { BurpScannerCheck(it, burpExtender, burpCollaboratorClient) }
         scanners
             .filter { it.profile.enabled }
             .forEach { enableScanner(it) }

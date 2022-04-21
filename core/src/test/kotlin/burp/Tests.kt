@@ -132,7 +132,7 @@ class Tests {
     @Test
     fun regex2() {
         val input = """<a href="/aria2/aria2/releases/download/release-1.36.0/aria2-1.36.0-win-64bit-build1.zip" rel="nofollow">"""
-        val pattern = """/release-[\d.]+/aria2-(?<version>[\d.]+)-win-64bit-build(?<build>[\d]+)\.zip"""
+        val pattern = """/release-[\d.]+/aria2-(?<version>[\d.]+)-win-64bit-build(?<build>\d+)\.zip"""
         val regex = pattern.toRegex()
 
         Assertions.assertFalse(regex.matches(input))
@@ -153,6 +153,17 @@ class Tests {
         val ok = """/v2/pet.js"""
         val no = """/v2/pet.jsp"""
         val pattern = """\.(?:apk|avi|bmp|css|doc|docx|eot|exe|flv|gif|ico|jpeg|jpg|js|m3u8|mp3|mp4|ogg|pdf|png|ppt|pptx|svg|swf|tat|ts|ttf|wma|wmv|woff|woff2|xls|xlsx|zip)$"""
+        val regex = pattern.toRegex()
+
+        Assertions.assertNotNull(regex.find(ok))
+        Assertions.assertNull(regex.find(no))
+    }
+
+    @Test
+    fun regex4() {
+        val ok = """/admin-api/v1/user/login"""
+        val no = """/v2/admin-api/v1/user/login"""
+        val pattern = """^/admin-api/"""
         val regex = pattern.toRegex()
 
         Assertions.assertNotNull(regex.find(ok))

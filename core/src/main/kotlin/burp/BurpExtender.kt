@@ -25,6 +25,7 @@ open class BurpExtender : IBurpExtender {
         callbacks.registerScannerInsertionPointProvider(CookieInsertionPointProvider(helpers))
         callbacks.registerScannerInsertionPointProvider(UrlRawInsertionPointProvider(helpers))
         callbacks.registerScannerListener(createScannerListener())
+        callbacks.registerExtensionStateListener(createExtensionStateListener())
 
         SwingUtilities.invokeLater(::initUI)
     }
@@ -36,10 +37,10 @@ open class BurpExtender : IBurpExtender {
         }
     }
 
-    private fun createScannerListener() = IScannerListener {
-        with(it) {
-            Utilities.out("[+] Found [$severity] issue [$issueName] from [$url]")
-        }
+    private fun createScannerListener() = BurpScannerListener(burpExtender)
+
+    private fun createExtensionStateListener() = IExtensionStateListener {
+        Utilities.out("Extension unloaded successfully")
     }
 
     private fun createConfigurationTab() = object : ITab {

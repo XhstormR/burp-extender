@@ -13,7 +13,7 @@ object PayloadHandler {
         insertionPoint: IScannerInsertionPoint,
         evaluator: HttpContextEvaluator,
         headers: Map<String, String>?,
-        burpCollaborator: BurpCollaborator,
+        burpCollaboratorClient: BurpCollaboratorClient,
     ): List<RequestHolder>? {
         payload ?: return null
 
@@ -28,8 +28,8 @@ object PayloadHandler {
                 val host = host.replace('.', '_')
                 val path = path.replace('.', '_').replace('/', '_')
                 val type = insertionPoint.insertionPointType
-                oobId = burpCollaborator.generatePayload(false)
-                val oobHost = "$oobId.${burpCollaborator.collaboratorServerLocation}"
+                oobId = burpCollaboratorClient.generatePayload(false)
+                val oobHost = "$oobId.${burpCollaboratorClient.collaboratorServerLocation}"
                 evaluator.setVariable("OOB", "$host.$path.$type.$oobHost")
             }
         }

@@ -13,7 +13,11 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:+")
 
-    implementation("org.springframework:spring-expression:5.3.18")
+    implementation("io.ktor:ktor-client-cio:+")
+    implementation("io.ktor:ktor-client-content-negotiation:+")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:+")
+
+    implementation("org.springframework:spring-expression:5.3.19")
 
     testImplementation("org.junit.jupiter:junit-jupiter:+")
     testImplementation("org.mockito:mockito-core:+")

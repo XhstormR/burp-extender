@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     idea
-    val kotlinVersion = "1.6.20"
+    val kotlinVersion = "1.6.21"
     kotlin("jvm") version kotlinVersion apply false
     kotlin("plugin.serialization") version kotlinVersion apply false
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
