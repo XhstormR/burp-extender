@@ -24,7 +24,7 @@ class PathInsertionPointProvider(
         while (true) {
             from = helpers.indexOfR(request, INSERTION_PATTERN1, false, from, end)
             if (from == -1) break
-            insertionPoints.add(RawInsertionPoint(request, INSERTION_POINT_NAME.format(++count), from, end))
+            insertionPoints.add(RawInsertionPoint(INSERTION_POINT_NAME.format(++count), request, from, end))
         }
 
         return insertionPoints

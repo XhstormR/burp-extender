@@ -12,8 +12,8 @@ open class BurpExtender : IBurpExtender {
     private lateinit var burpPanelHelper: BurpPanelHelper
 
     override fun registerExtenderCallbacks(callbacks: IBurpExtenderCallbacks) {
-        Utilities(callbacks, null, EXTENSION_NAME)
-        Utilities.out("Loaded $EXTENSION_NAME v$VERSION")
+        BurpUtil.init(callbacks)
+        BurpUtil.log("Loaded $EXTENSION_NAME v$VERSION")
 
         burpExtender = callbacks
         helpers = callbacks.helpers
@@ -24,7 +24,7 @@ open class BurpExtender : IBurpExtender {
         callbacks.registerScannerInsertionPointProvider(HeaderInsertionPointProvider(helpers))
         callbacks.registerScannerInsertionPointProvider(CookieInsertionPointProvider(helpers))
         callbacks.registerScannerInsertionPointProvider(UrlRawInsertionPointProvider(helpers))
-        callbacks.registerScannerListener(createScannerListener())
+        callbacks.registerScannerListener(BurpScannerListener())
         callbacks.registerExtensionStateListener(createExtensionStateListener())
 
         SwingUtilities.invokeLater(::initUI)
@@ -37,10 +37,8 @@ open class BurpExtender : IBurpExtender {
         }
     }
 
-    private fun createScannerListener() = BurpScannerListener(burpExtender)
-
     private fun createExtensionStateListener() = IExtensionStateListener {
-        Utilities.out("Extension unloaded successfully")
+        BurpUtil.log("Extension unloaded successfully")
     }
 
     private fun createConfigurationTab() = object : ITab {
@@ -51,7 +49,7 @@ open class BurpExtender : IBurpExtender {
     }
 
     companion object {
-        private const val EXTENSION_NAME = "Scanner++"
-        private const val VERSION = "1.0"
+        const val EXTENSION_NAME = "Scanner++"
+        const val VERSION = "1.0"
     }
 }

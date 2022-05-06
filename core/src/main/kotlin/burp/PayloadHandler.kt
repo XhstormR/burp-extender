@@ -52,7 +52,7 @@ object PayloadHandler {
             headers
                 .mapValues { (_, v) -> evaluator.evaluate(v) }
                 .entries
-                .fold(holder.bytes) { acc, (k, v) -> Utilities.addOrReplaceHeader(acc, k, v) }
+                .fold(holder.bytes) { acc, (k, v) -> BurpUtil.addOrReplaceHeader(acc, k, v) }
                 .let { RequestHolder(it, holder.payloadOffset, oobId) }
         }
     }

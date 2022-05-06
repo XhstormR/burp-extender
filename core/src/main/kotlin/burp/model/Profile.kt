@@ -97,6 +97,7 @@ enum class MatcherPart(val isRequest: Boolean) {
     Query(true),
     Method(true),
     ContentType(true),
+    ContentLength(true),
     Request(true),
     RequestBody(true),
     RequestHeader(true),

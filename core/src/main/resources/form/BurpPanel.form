@@ -45,6 +45,12 @@
                   <text value="Invert"/>
                 </properties>
               </component>
+              <component id="4d9fb" class="javax.swing.JButton" binding="settingButton">
+                <constraints/>
+                <properties>
+                  <text value="Settings"/>
+                </properties>
+              </component>
             </children>
           </grid>
           <component id="c6535" class="javax.swing.JSeparator">

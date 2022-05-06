@@ -18,7 +18,7 @@ class HeaderInsertionPointProvider(
             from = helpers.indexOfR(request, INSERTION_PATTERN1, false, from, end)
             if (from == -1) break
             val to = helpers.indexOf(request, INSERTION_PATTERN2, false, from, end)
-            insertionPoints.add(RawInsertionPoint(request, INSERTION_POINT_NAME, from, to))
+            insertionPoints.add(RawInsertionPoint(INSERTION_POINT_NAME, request, from, to))
         }
 
         return insertionPoints

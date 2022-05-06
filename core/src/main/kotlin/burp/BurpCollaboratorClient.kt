@@ -28,14 +28,14 @@ class BurpCollaboratorClient(
         val interactions = fetchAllCollaboratorInteractions()
         if (interactions.isEmpty()) return
 
-        Utilities.out("[!] Burp Collaborator received [${interactions.size}] interactions:")
-        Utilities.out("---")
+        BurpUtil.log("[!] Burp Collaborator received [${interactions.size}] interactions:")
+        BurpUtil.log("---")
 
         val interactionMap = interactions.map { it.properties }
 
         interactionMap.forEach {
-            it.forEach { (k, v) -> Utilities.out("$k: $v") }
-            Utilities.out("---")
+            it.forEach { (k, v) -> BurpUtil.log("$k: $v") }
+            BurpUtil.log("---")
         }
 
         interactionMap

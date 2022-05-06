@@ -96,13 +96,26 @@ class HttpRequestResponseWrapper(
             }
             return true
         }
+
+        fun checkRange(value:Long, range: String): Boolean {
+            val (i, j) = range.split('-')
+                .take(2)
+                .map { it.toLong() }
+                .let { it[0] to it[1] }
+            return value.between(i, j)
+        }
     }
 
     inner class RequestInfoWrapper(
         base: IRequestInfo,
         bytes: ByteArray,
     ) : IRequestInfo by base,
-        Marker(bytes, base.bodyOffset)
+        Marker(bytes, base.bodyOffset) {
+
+        val contentLength = request.size - bodyOffset
+
+        fun checkContentLengthRange(value: String) = checkRange(contentLength.toLong(), value)
+    }
 
     inner class ResponseInfoWrapper(
         base: IResponseInfo,
@@ -114,12 +127,6 @@ class HttpRequestResponseWrapper(
 
         var responseTime = 0L
 
-        fun checkResponseTime(value: String): Boolean {
-            val (i, j) = value.split('-')
-                .take(2)
-                .map { it.toLong() }
-                .let { it[0] to it[1] }
-            return responseTime.between(i, j)
-        }
+        fun checkResponseTimeRange(value: String) = checkRange(responseTime, value)
     }
 }

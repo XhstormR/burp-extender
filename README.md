@@ -356,6 +356,7 @@ Server: Jetty(9.2.9.v20150224)
     * `Query`: 请求参数，eg.`debug=true&proxy=true`
     * `Method`: 请求方法，eg.`POST`
     * [`ContentType`](#contenttype): 内容类型，eg.`JSON`
+    * `ContentLength`: 内容长度，eg.`4000-5000` 代表匹配内容长度在 4000B-5000B 的请求
     * `Request`: 整个请求，匹配结果支持高亮
     * `RequestBody`: 请求体，匹配结果支持高亮
     * `RequestHeader`: 请求头，匹配结果支持高亮

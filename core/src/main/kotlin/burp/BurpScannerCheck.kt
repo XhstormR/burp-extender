@@ -53,13 +53,13 @@ class BurpScannerCheck(
                     println("response.type: " + response.responseType)
                 }
             }
-            println(it.toString())
+            BurpUtil.logDebug(it.toString())
         }
 
         val (name, _, _, detail, variables, rules, rulesCondition) = profile
 
         variables?.let { evaluator.setVariable(it.toSortedMap()) }
-        println(httpContext.variables)
+        BurpUtil.logDebug(httpContext.variables)
 
         val pass = rulesCondition.evaluate(rules) { (_, _, matchers, matchersCondition) ->
             match(http, matchers, matchersCondition, evaluator)
@@ -89,19 +89,18 @@ class BurpScannerCheck(
                     println("doActiveScan")
                     println("request.url: " + http.requestInfoWrapper.url)
                     println("response.statusCode: " + http.responseInfoWrapper.statusCode)
-                    println("insertionPoint: " + insertionPoint)
                     println("insertionPoint.baseValue: " + insertionPoint.baseValue)
                     println("insertionPoint.insertionPointName: " + insertionPoint.insertionPointName)
                     println("insertionPoint.insertionPointType: " + insertionPoint.insertionPointType)
                 }
             }
-            println(it.toString())
+            BurpUtil.logDebug(it.toString())
         }
 
         val (name, _, _, detail, variables, rules, rulesCondition) = profile
 
         variables?.let { evaluator.setVariable(it.toSortedMap()) }
-        println(httpContext.variables)
+        BurpUtil.logDebug(httpContext.variables)
 
         val pass = rulesCondition.evaluate(rules) { (payload, headers, matchers, matchersCondition) ->
             if (!preMatch(http, matchers, matchersCondition, evaluator)) return@evaluate false
@@ -163,11 +162,12 @@ class BurpScannerCheck(
                             MatcherPart.Query -> request.url.query.contains(value, caseSensitive)
                             MatcherPart.Method -> request.method.contains(value, caseSensitive)
                             MatcherPart.ContentType -> request.getContentTypeName().contains(value, caseSensitive)
+                            MatcherPart.ContentLength -> request.checkContentLengthRange(value)
                             MatcherPart.Request -> request.mark(value, caseSensitive)
                             MatcherPart.RequestBody -> request.markBody(value, caseSensitive)
                             MatcherPart.RequestHeader -> request.markHeader(value, caseSensitive)
                             MatcherPart.Status -> response.statusCode.toString() == value
-                            MatcherPart.ResponseTime -> response.checkResponseTime(value)
+                            MatcherPart.ResponseTime -> response.checkResponseTimeRange(value)
                             MatcherPart.ResponseType -> response.responseType.contains(value, caseSensitive)
                             MatcherPart.Response -> response.mark(value, caseSensitive)
                             MatcherPart.ResponseBody -> response.markBody(value, caseSensitive)
@@ -184,11 +184,12 @@ class BurpScannerCheck(
                             MatcherPart.Query -> request.url.query.contains(regex)
                             MatcherPart.Method -> request.method.contains(regex)
                             MatcherPart.ContentType -> request.getContentTypeName().contains(regex)
+                            MatcherPart.ContentLength -> request.checkContentLengthRange(value)
                             MatcherPart.Request -> request.mark(regex)
                             MatcherPart.RequestBody -> request.markBody(regex)
                             MatcherPart.RequestHeader -> request.markHeader(regex)
                             MatcherPart.Status -> response.statusCode.toString().contains(regex)
-                            MatcherPart.ResponseTime -> response.checkResponseTime(value)
+                            MatcherPart.ResponseTime -> response.checkResponseTimeRange(value)
                             MatcherPart.ResponseType -> response.responseType.contains(regex)
                             MatcherPart.Response -> response.mark(regex)
                             MatcherPart.ResponseBody -> response.markBody(regex)

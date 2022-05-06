@@ -19,43 +19,56 @@ class BurpPanelHelper(
 
         reloadButton.addActionListener { loadProfilePath() }
         invertButton.addActionListener { profileTableModel.invertSelected() }
+        settingButton.addActionListener { BurpUtil.settings.showSettings() }
         directoryButton.addActionListener { selectProfilePath() }
         directoryField.document.addUndoableEditListener { loadProfilePath() }
 
-        burpExtender.loadExtensionSetting(PROFILE_PATH_KEY)
-            ?.let { updateProfilePath(it) }
+        BurpUtil.settings.getString(ConfigurableSettings.PROFILE_PATH_KEY).let {
+            directoryField.text = it
+        }
+        BurpUtil.settings.register(ConfigurableSettings.PROFILE_PATH_KEY) {
+            directoryField.text = it
+        }
     }
 
     private fun selectProfilePath() {
         val fileChooser = JFileChooser(directoryField.text)
             .apply { fileSelectionMode = JFileChooser.DIRECTORIES_ONLY }
 
-        val userSelection = fileChooser.showOpenDialog(`$$$getRootComponent$$$`())
+        val userSelection = fileChooser.showOpenDialog(BurpUtil.getBurpFrame())
         if (userSelection != JFileChooser.APPROVE_OPTION) return
 
         updateProfilePath(fileChooser.selectedFile.absolutePath)
     }
 
     private fun loadProfilePath() {
-        if (directoryField.text.isEmpty()) return
+        val profilePath = directoryField.text
+        if (profilePath.isEmpty()) {
+            updateProfile(setOf())
+            return
+        }
 
         try {
-            val profiles = File(directoryField.text)
+            val profiles = File(profilePath)
                 .walk()
                 .filter { it.extension == "conf" }
                 .map { ConfigFactory.parseFile(it) }
                 .map { Hocon.decodeFromConfig<Profile>(it) }
                 .toSet()
 
-            profileTableModel.setData(profiles)
-            profileTable.rowSorter.toggleSortOrder(1)
-            updateProfileWidth(ProfileTableModel.PROFILE_COLUMWIDTHS)
+            updateProfile(profiles)
 
-            Utilities.out("Loaded profiles [${profiles.joinToString { it.name }}] from [${directoryField.text}]")
+            BurpUtil.log("Loaded profiles [${profiles.joinToString { it.name }}] from [$profilePath]")
         } catch (e: Exception) {
-            Utilities.err("Failed to load profiles from [${directoryField.text}]")
-            Utilities.err(e.stackTraceToString())
+            BurpUtil.logError("Failed to load profiles from [$profilePath]")
+            BurpUtil.logError(e.stackTraceToString())
         }
+    }
+
+    private fun updateProfile(profiles: Set<Profile>) {
+        profileTableModel.setData(profiles)
+        profileTable.rowSorter.toggleSortOrder(1)
+        updateProfileWidth(ProfileTableModel.PROFILE_COLUMWIDTHS)
     }
 
     private fun updateProfileWidth(percentages: Array<Double>) {
@@ -67,10 +80,6 @@ class BurpPanelHelper(
 
     private fun updateProfilePath(profilePath: String) {
         directoryField.text = profilePath
-        burpExtender.saveExtensionSetting(PROFILE_PATH_KEY, profilePath)
-    }
-
-    companion object {
-        private const val PROFILE_PATH_KEY = "PROFILE_PATH_KEY"
+        BurpUtil.settings.update(ConfigurableSettings.PROFILE_PATH_KEY, profilePath)
     }
 }
