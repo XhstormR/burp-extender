@@ -63,10 +63,10 @@ fun IHttpRequestResponse.responseHeader(bodyOffset: Int) = response.sliceArray(0
 fun IHttpRequestResponse.requestHeaderString(bodyOffset: Int) = request.decodeToString(0, bodyOffset)
 fun IHttpRequestResponse.responseHeaderString(bodyOffset: Int) = response.decodeToString(0, bodyOffset)
 
-fun IExtensionHelpers.indexOfL(data: ByteArray, pattern: ByteArray, caseSensitive: Boolean = false, from: Int = 0, to: Int = pattern.size) =
+fun IExtensionHelpers.indexOfL(data: ByteArray, pattern: ByteArray, caseSensitive: Boolean = false, from: Int = 0, to: Int = data.size) =
     indexOf(data, pattern, caseSensitive, from, to)
 
-fun IExtensionHelpers.indexOfR(data: ByteArray, pattern: ByteArray, caseSensitive: Boolean = false, from: Int = 0, to: Int = pattern.size) =
+fun IExtensionHelpers.indexOfR(data: ByteArray, pattern: ByteArray, caseSensitive: Boolean = false, from: Int = 0, to: Int = data.size) =
     indexOf(data, pattern, caseSensitive, from, to).let { if (it == -1) it else it + pattern.size }
 
 fun IRequestInfo.getContentTypeName() = ContentType.values().first { it.code == contentType }.name

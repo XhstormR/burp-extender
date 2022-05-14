@@ -1,8 +1,12 @@
 package burp
 
+import burp.spel.TemplateExpressionEvaluator
+import org.springframework.expression.EvaluationContext
 import kotlin.random.Random
 
 fun Long.between(i: Long, j: Long) = this in i..j
+
+fun EvaluationContext.evaluate(expression: String) = TemplateExpressionEvaluator.evaluate<String>(this, expression)
 
 inline fun <reified T> clazz() = T::class.java
 

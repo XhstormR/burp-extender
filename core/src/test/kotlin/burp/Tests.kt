@@ -3,8 +3,8 @@ package burp
 import burp.model.ConditionType
 import burp.model.Profile
 import burp.model.evaluate
-import burp.spel.HttpContext
-import burp.spel.HttpContextEvaluator
+import burp.spel.HttpObject
+import burp.spel.HttpObjectEvaluationContext
 import com.typesafe.config.ConfigFactory
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
@@ -71,18 +71,17 @@ class Tests {
             on { responseInfoWrapper } doReturn mResponseInfoWrapper
         }
         val mHelpers = mock<IExtensionHelpers>()
-        val httpContextEvaluator = HttpContextEvaluator(HttpContext(mHttp, mHelpers))
+        val context = HttpObjectEvaluationContext(HttpObject(mHttp, mHelpers))
 
         val variables = mapOf(
             "r1" to "#{randomInt(200, 300)}",
-            "r2" to "#{randomString(r1)}",
+            "r2" to "#{randomString(#r1)}",
             "r3" to "#{randomDouble(0.0,1.0)}",
         )
-        httpContextEvaluator.setVariable(variables)
-        println(httpContextEvaluator.httpContext.variables)
+        context.setVariables(variables)
         val expressionString =
-            """#{('Hello World'+'!').bytes.length} #{r1+'||'+r2} #{isA(123)} #{md5("hahahaha")} request.method == "GET" response.statusCode == 200 #{response.abc()} #{response.body.length}"""
-        println(httpContextEvaluator.evaluate(expressionString))
+            """#{('Hello World'+'!').bytes.length} #{#r1+'||'+#r2} #{isA(123)} #{md5("hahahaha")} 1+1 request.method == "GET" response.statusCode == 200 #{response.abc()} #{response.body.length}"""
+        println(context.evaluate(expressionString))
     }
 
     @Test
@@ -131,7 +130,7 @@ class Tests {
 
     @Test
     fun regex2() {
-        val input = """<a href="/aria2/aria2/releases/download/release-1.36.0/aria2-1.36.0-win-64bit-build1.zip" rel="nofollow">"""
+        val input = """<a href="/aria2/aria2/releases/download/release-1.36.0/aria2-1.36.0-win-64bit-build2.zip" rel="nofollow">"""
         val pattern = """/release-[\d.]+/aria2-(?<version>[\d.]+)-win-64bit-build(?<build>\d+)\.zip"""
         val regex = pattern.toRegex()
 

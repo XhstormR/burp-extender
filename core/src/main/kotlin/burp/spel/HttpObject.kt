@@ -6,15 +6,13 @@ import burp.randomDouble as randomDoubleA
 import burp.randomInt as randomIntA
 import burp.randomString as randomStringA
 
-data class HttpContext(
+data class HttpObject(
     val http: HttpRequestResponseWrapper,
     val helpers: IExtensionHelpers,
 ) {
 
     val request = http.requestInfoWrapper
     val response = http.responseInfoWrapper
-
-    val variables = mutableMapOf<String, String?>()
 
     fun isA(x: Any): Boolean {
         println("isA")

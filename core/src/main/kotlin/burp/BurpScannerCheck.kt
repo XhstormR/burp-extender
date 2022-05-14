@@ -9,8 +9,8 @@ import burp.model.ProfileDetail
 import burp.model.ProfileType
 import burp.model.ScanIssue
 import burp.model.evaluate
-import burp.spel.HttpContext
-import burp.spel.HttpContextEvaluator
+import burp.spel.HttpObject
+import burp.spel.HttpObjectEvaluationContext
 import java.io.ByteArrayOutputStream
 import java.io.PrintWriter
 
@@ -32,8 +32,8 @@ class BurpScannerCheck(
         val http = HttpRequestResponseWrapper(baseRequestResponse, helpers)
         val request = http.requestInfoWrapper
         val response = http.responseInfoWrapper
-        val httpContext = HttpContext(http, helpers)
-        val evaluator = HttpContextEvaluator(httpContext)
+        val httpObject = HttpObject(http, helpers)
+        val context = HttpObjectEvaluationContext(httpObject)
 
         ByteArrayOutputStream().use {
             PrintWriter(it).use {
@@ -58,11 +58,14 @@ class BurpScannerCheck(
 
         val (name, _, _, detail, variables, rules, rulesCondition) = profile
 
-        variables?.let { evaluator.setVariable(it.toSortedMap()) }
-        BurpUtil.logDebug(httpContext.variables)
+        variables?.let {
+            context.setVariables(it)
+            it.mapValues { (k, _) -> context.lookupVariable(k) }
+                .let { BurpUtil.logDebug(it) }
+        }
 
         val pass = rulesCondition.evaluate(rules) { (_, _, matchers, matchersCondition) ->
-            match(http, matchers, matchersCondition, evaluator)
+            match(http, matchers, matchersCondition, context)
         }
 
         if (pass) issues.add(toScanIssue(name, detail, http))
@@ -79,8 +82,8 @@ class BurpScannerCheck(
         if (profile.type != ProfileType.Active) return issues
 
         var http = HttpRequestResponseWrapper(baseRequestResponse, helpers)
-        val httpContext = HttpContext(http, helpers)
-        val evaluator = HttpContextEvaluator(httpContext)
+        val httpObject = HttpObject(http, helpers)
+        val context = HttpObjectEvaluationContext(httpObject)
 
         ByteArrayOutputStream().use {
             PrintWriter(it).use {
@@ -99,13 +102,16 @@ class BurpScannerCheck(
 
         val (name, _, _, detail, variables, rules, rulesCondition) = profile
 
-        variables?.let { evaluator.setVariable(it.toSortedMap()) }
-        BurpUtil.logDebug(httpContext.variables)
+        variables?.let {
+            context.setVariables(it)
+            it.mapValues { (k, _) -> context.lookupVariable(k) }
+                .let { BurpUtil.logDebug(it) }
+        }
 
         val pass = rulesCondition.evaluate(rules) { (payload, headers, matchers, matchersCondition) ->
-            if (!preMatch(http, matchers, matchersCondition, evaluator)) return@evaluate false
+            if (!preMatch(http, matchers, matchersCondition, context)) return@evaluate false
 
-            val checkRequests = PayloadHandler.handle(payload, insertionPoint, evaluator, headers, burpCollaboratorClient)
+            val checkRequests = PayloadHandler.handle(payload, insertionPoint, context, headers, burpCollaboratorClient)
                 ?: return@evaluate false
 
             ConditionType.Or.evaluate(checkRequests) { checkRequest ->
@@ -119,7 +125,7 @@ class BurpScannerCheck(
                     .apply { responseInfoWrapper.responseTime = responseTime }
 
                 checkRequest.oobId?.let { oobId -> burpCollaboratorClient.registerOutOfBandData(oobId, toScanIssue(name, detail, http)) }
-                postMatch(http, matchers, matchersCondition, evaluator)
+                postMatch(http, matchers, matchersCondition, context)
             }
         }
 
@@ -132,25 +138,25 @@ class BurpScannerCheck(
         http: HttpRequestResponseWrapper,
         matchers: List<Matcher>,
         matchersCondition: ConditionType,
-        evaluator: HttpContextEvaluator,
-    ) = matchers.filter { it.part.isRequest }.let { match(http, it, matchersCondition, evaluator) || it.isEmpty() }
+        context: HttpObjectEvaluationContext,
+    ) = matchers.filter { it.part.isRequest }.let { match(http, it, matchersCondition, context) || it.isEmpty() }
 
     private fun postMatch(
         http: HttpRequestResponseWrapper,
         matchers: List<Matcher>,
         matchersCondition: ConditionType,
-        evaluator: HttpContextEvaluator,
-    ) = matchers.filterNot { it.part.isRequest }.let { match(http, it, matchersCondition, evaluator) }
+        context: HttpObjectEvaluationContext,
+    ) = matchers.filterNot { it.part.isRequest }.let { match(http, it, matchersCondition, context) }
 
     private fun match(
         http: HttpRequestResponseWrapper,
         matchers: List<Matcher>,
         matchersCondition: ConditionType,
-        evaluator: HttpContextEvaluator,
+        context: HttpObjectEvaluationContext,
     ) = matchersCondition.evaluate(matchers) { (part, type, values, greedy, negative, caseSensitive, condition) ->
         val request = http.requestInfoWrapper
         val response = http.responseInfoWrapper
-        values.mapNotNull { evaluator.evaluate(it) }.let {
+        values.mapNotNull { context.evaluate(it) }.let {
             condition.evaluate(it, greedy) { value ->
                 val ret = when (type) {
                     MatcherType.Word -> {

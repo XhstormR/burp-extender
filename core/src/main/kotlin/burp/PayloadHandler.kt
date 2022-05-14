@@ -4,14 +4,14 @@ import burp.model.Payload
 import burp.model.PayloadAction
 import burp.model.PayloadPart
 import burp.model.code
-import burp.spel.HttpContextEvaluator
+import burp.spel.HttpObjectEvaluationContext
 
 object PayloadHandler {
 
     fun handle(
         payload: Payload?,
         insertionPoint: IScannerInsertionPoint,
-        evaluator: HttpContextEvaluator,
+        context: HttpObjectEvaluationContext,
         headers: Map<String, String>?,
         burpCollaboratorClient: BurpCollaboratorClient,
     ): List<RequestHolder>? {
@@ -24,18 +24,18 @@ object PayloadHandler {
 
         var oobId: String? = null
         if (oob) {
-            with(evaluator.httpContext.http.requestInfoWrapper.url) {
+            with(context.httpObject.http.requestInfoWrapper.url) {
                 val host = host.replace('.', '_')
                 val path = path.replace('.', '_').replace('/', '_')
                 val type = insertionPoint.insertionPointType
                 oobId = burpCollaboratorClient.generatePayload(false)
                 val oobHost = "$oobId.${burpCollaboratorClient.collaboratorServerLocation}"
-                evaluator.setVariable("OOB", "$host.$path.$type.$oobHost")
+                context.setVariable("OOB", "$host.$path.$type.$oobHost")
             }
         }
 
         val payloads = values
-            .mapNotNull { evaluator.evaluate(it) }
+            .mapNotNull { context.evaluate(it) }
             .map {
                 when (action) {
                     PayloadAction.Append -> insertionPoint.baseValue + it
@@ -50,7 +50,7 @@ object PayloadHandler {
 
         return payloads.map { holder ->
             headers
-                .mapValues { (_, v) -> evaluator.evaluate(v) }
+                .mapValues { (_, v) -> context.evaluate(v) }
                 .entries
                 .fold(holder.bytes) { acc, (k, v) -> BurpUtil.addOrReplaceHeader(acc, k, v) }
                 .let { RequestHolder(it, holder.payloadOffset, oobId) }

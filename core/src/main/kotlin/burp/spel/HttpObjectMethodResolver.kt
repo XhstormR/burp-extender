@@ -8,11 +8,11 @@ import org.springframework.expression.MethodExecutor
 import org.springframework.expression.MethodResolver
 import org.springframework.util.ReflectionUtils
 
-class HttpContextMethodResolver : MethodResolver {
+class HttpObjectMethodResolver : MethodResolver {
 
     companion object {
         private val METHOD_ABC =
-            ReflectionUtils.findMethod(clazz<HttpContext>(), "abc", clazz<HttpRequestResponseWrapper.ResponseInfoWrapper>())!!
+            ReflectionUtils.findMethod(clazz<HttpObject>(), "abc", clazz<HttpRequestResponseWrapper.ResponseInfoWrapper>())!!
     }
 
     override fun resolve(
@@ -21,11 +21,11 @@ class HttpContextMethodResolver : MethodResolver {
         name: String,
         argumentTypes: MutableList<TypeDescriptor>
     ): MethodExecutor? {
-        val httpContext = context.rootObject.value as? HttpContext ?: return null
+        val httpObject = context.rootObject.value as? HttpObject ?: return null
         when (name) {
             "abc" -> {
                 when (target) {
-                    is HttpRequestResponseWrapper.ResponseInfoWrapper -> return HttpContextMethodExecutor(METHOD_ABC)
+                    is HttpRequestResponseWrapper.ResponseInfoWrapper -> return HttpObjectMethodExecutor(METHOD_ABC)
                 }
             }
         }
