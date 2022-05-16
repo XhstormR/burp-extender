@@ -15,6 +15,8 @@ import org.junit.jupiter.api.TestInstance
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.springframework.expression.spel.standard.SpelExpressionParser
+import org.springframework.util.ReflectionUtils
+import java.util.regex.Pattern
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class Tests {
@@ -145,6 +147,12 @@ class Tests {
         val version = matchResult.groups["version"]?.value
         val build = matchResult.groups["build"]?.value
         println("checkver: $version-$build")
+
+        val method = ReflectionUtils.findMethod(clazz<Pattern>(), "namedGroups")!!
+            .apply { isAccessible = true }
+        val map = method.invoke(regex.toPattern()) as? Map<String, Int> ?: error("")
+        val map2 = map.mapValues { (_, v) -> matchResult.groups[v]?.value }
+        println(map2)
     }
 
     @Test

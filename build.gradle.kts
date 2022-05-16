@@ -35,6 +35,7 @@ allprojects {
     tasks {
         withType<Test> {
             useJUnitPlatform()
+            jvmArgs("--add-opens=java.base/java.util.regex=ALL-UNNAMED")
         }
 
         withType<KotlinCompile> {
