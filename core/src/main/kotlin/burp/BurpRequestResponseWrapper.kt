@@ -1,6 +1,6 @@
 package burp
 
-class HttpRequestResponseWrapper(
+class BurpRequestResponseWrapper(
     base: IHttpRequestResponse,
     private val helpers: IExtensionHelpers,
 ) : IHttpRequestResponse by base {

@@ -124,7 +124,7 @@ rules = []
 * `name`: string
     * 插入点名称，默认值 `*`，为 `*` 时表示匹配所有插入点名称，支持正则表达式
 * `oob`: true | false
-    * 是否使用带外流量来检测问题，默认值 `false`。启用后，荷载数据可以通过如下方式使用 `"ping -c1 #{OOB}"`
+    * 是否使用带外流量来检测问题，默认值 `false`。启用后，荷载数据可以通过如下方式使用 `"ping -c1 #{#OOB}"`
 * `action`: [PayloadAction](#payloadaction)
     * 插入点行为，默认值 `Replace`
 * `values`: [string]
@@ -173,7 +173,7 @@ rules = []
 {
     key1 = "Hello"
     key2 = "#{randomInt(20, 30)}"
-    key3 = "#{randomString(key2)}"
+    key3 = "#{randomString(#key2)}"
     key4 = "#{randomDouble(0.0,1.0) + 2}"
 }
 ```

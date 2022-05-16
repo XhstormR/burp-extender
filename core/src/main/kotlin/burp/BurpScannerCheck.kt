@@ -29,7 +29,7 @@ class BurpScannerCheck(
 
         if (profile.type != ProfileType.Passive) return issues
 
-        val http = HttpRequestResponseWrapper(baseRequestResponse, helpers)
+        val http = BurpRequestResponseWrapper(baseRequestResponse, helpers)
         val request = http.requestInfoWrapper
         val response = http.responseInfoWrapper
         val httpObject = HttpObject(http, helpers)
@@ -58,7 +58,7 @@ class BurpScannerCheck(
 
         val (name, _, _, detail, variables, rules, rulesCondition) = profile
 
-        variables?.let {
+        variables?.toSortedMap()?.let { it: Map<String, String> ->
             context.setVariables(it)
             it.mapValues { (k, _) -> context.lookupVariable(k) }
                 .let { BurpUtil.logDebug(it) }
@@ -81,7 +81,7 @@ class BurpScannerCheck(
 
         if (profile.type != ProfileType.Active) return issues
 
-        var http = HttpRequestResponseWrapper(baseRequestResponse, helpers)
+        var http = BurpRequestResponseWrapper(baseRequestResponse, helpers)
         val httpObject = HttpObject(http, helpers)
         val context = HttpObjectEvaluationContext(httpObject)
 
@@ -102,7 +102,7 @@ class BurpScannerCheck(
 
         val (name, _, _, detail, variables, rules, rulesCondition) = profile
 
-        variables?.let {
+        variables?.toSortedMap()?.let { it: Map<String, String> ->
             context.setVariables(it)
             it.mapValues { (k, _) -> context.lookupVariable(k) }
                 .let { BurpUtil.logDebug(it) }
@@ -119,7 +119,7 @@ class BurpScannerCheck(
                     burpExtender.makeHttpRequest(baseRequestResponse.httpService, checkRequest.bytes)
                 }
 
-                http = HttpRequestResponseWrapper(checkRequestResponse, helpers)
+                http = BurpRequestResponseWrapper(checkRequestResponse, helpers)
                     .apply { requestInfoWrapper.markers.add(checkRequest.payloadOffset) }
                     .apply { requestInfoWrapper.markers.addAll(http.requestInfoWrapper.markers) }
                     .apply { responseInfoWrapper.responseTime = responseTime }
@@ -135,21 +135,21 @@ class BurpScannerCheck(
     }
 
     private fun preMatch(
-        http: HttpRequestResponseWrapper,
+        http: BurpRequestResponseWrapper,
         matchers: List<Matcher>,
         matchersCondition: ConditionType,
         context: HttpObjectEvaluationContext,
     ) = matchers.filter { it.part.isRequest }.let { match(http, it, matchersCondition, context) || it.isEmpty() }
 
     private fun postMatch(
-        http: HttpRequestResponseWrapper,
+        http: BurpRequestResponseWrapper,
         matchers: List<Matcher>,
         matchersCondition: ConditionType,
         context: HttpObjectEvaluationContext,
     ) = matchers.filterNot { it.part.isRequest }.let { match(http, it, matchersCondition, context) }
 
     private fun match(
-        http: HttpRequestResponseWrapper,
+        http: BurpRequestResponseWrapper,
         matchers: List<Matcher>,
         matchersCondition: ConditionType,
         context: HttpObjectEvaluationContext,
@@ -212,7 +212,7 @@ class BurpScannerCheck(
     private fun toScanIssue(
         name: String,
         detail: ProfileDetail,
-        requestResponse: HttpRequestResponseWrapper,
+        requestResponse: BurpRequestResponseWrapper,
     ): ScanIssue {
         val requestMarkers = requestResponse.requestInfoWrapper.markers.merge()
         val responseMarkers = requestResponse.responseInfoWrapper.markers.merge()

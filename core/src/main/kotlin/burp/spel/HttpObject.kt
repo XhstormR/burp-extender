@@ -1,13 +1,13 @@
 package burp.spel
 
-import burp.HttpRequestResponseWrapper
+import burp.BurpRequestResponseWrapper
 import burp.IExtensionHelpers
 import burp.randomDouble as randomDoubleA
 import burp.randomInt as randomIntA
 import burp.randomString as randomStringA
 
 data class HttpObject(
-    val http: HttpRequestResponseWrapper,
+    val http: BurpRequestResponseWrapper,
     val helpers: IExtensionHelpers,
 ) {
 
@@ -26,7 +26,7 @@ data class HttpObject(
         return true
     }
 
-    fun abc(response: HttpRequestResponseWrapper.ResponseInfoWrapper): Boolean {
+    fun abc(response: BurpRequestResponseWrapper.ResponseInfoWrapper): Boolean {
         println("abc")
         println(response)
         return true

@@ -1,5 +1,10 @@
-package burp
+package burp.insertion
 
+import burp.IExtensionHelpers
+import burp.IHttpRequestResponse
+import burp.IScannerInsertionPoint
+import burp.IScannerInsertionPointProvider
+import burp.indexOfR
 import burp.model.PayloadPart
 import burp.model.code
 

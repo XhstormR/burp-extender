@@ -1,5 +1,9 @@
 package burp
 
+import burp.insertion.CookieInsertionPointProvider
+import burp.insertion.HeaderInsertionPointProvider
+import burp.insertion.PathInsertionPointProvider
+import burp.insertion.UrlRawInsertionPointProvider
 import javax.swing.JTabbedPane
 import javax.swing.SwingUtilities
 

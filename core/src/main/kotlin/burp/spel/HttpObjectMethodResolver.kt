@@ -1,6 +1,6 @@
 package burp.spel
 
-import burp.HttpRequestResponseWrapper
+import burp.BurpRequestResponseWrapper
 import burp.clazz
 import org.springframework.core.convert.TypeDescriptor
 import org.springframework.expression.EvaluationContext
@@ -12,7 +12,7 @@ class HttpObjectMethodResolver : MethodResolver {
 
     companion object {
         private val METHOD_ABC =
-            ReflectionUtils.findMethod(clazz<HttpObject>(), "abc", clazz<HttpRequestResponseWrapper.ResponseInfoWrapper>())!!
+            ReflectionUtils.findMethod(clazz<HttpObject>(), "abc", clazz<BurpRequestResponseWrapper.ResponseInfoWrapper>())!!
     }
 
     override fun resolve(
@@ -25,7 +25,7 @@ class HttpObjectMethodResolver : MethodResolver {
         when (name) {
             "abc" -> {
                 when (target) {
-                    is HttpRequestResponseWrapper.ResponseInfoWrapper -> return HttpObjectMethodExecutor(METHOD_ABC)
+                    is BurpRequestResponseWrapper.ResponseInfoWrapper -> return HttpObjectMethodExecutor(METHOD_ABC)
                 }
             }
         }

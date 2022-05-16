@@ -1,5 +1,7 @@
-package burp
+package burp.insertion
 
+import burp.BurpUtil
+import burp.IScannerInsertionPoint
 import java.io.ByteArrayOutputStream
 
 class RawInsertionPoint(

@@ -58,15 +58,15 @@ class Tests {
 
     @Test
     fun test3() {
-        val mRequestInfoWrapper = mock<HttpRequestResponseWrapper.RequestInfoWrapper> {
+        val mRequestInfoWrapper = mock<BurpRequestResponseWrapper.RequestInfoWrapper> {
             on { bytes } doReturn byteArrayOf(1, 2, 3, 4, 5)
             on { body } doReturn "test"
         }
-        val mResponseInfoWrapper = mock<HttpRequestResponseWrapper.ResponseInfoWrapper> {
+        val mResponseInfoWrapper = mock<BurpRequestResponseWrapper.ResponseInfoWrapper> {
             on { bytes } doReturn byteArrayOf(1, 2, 3)
             on { body } doReturn "test"
         }
-        val mHttp = mock<HttpRequestResponseWrapper> {
+        val mHttp = mock<BurpRequestResponseWrapper> {
             on { requestInfoWrapper } doReturn mRequestInfoWrapper
             on { responseInfoWrapper } doReturn mResponseInfoWrapper
         }
