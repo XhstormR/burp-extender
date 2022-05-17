@@ -21,11 +21,11 @@ class BurpScannerListener :
         }
     }
 
-    private var issueCallbackEnable = BurpUtil.settings.getBoolean(ConfigurableSettings.ISSUE_CALLBACK_ENABLE_KEY)
+    private var issueCallbackEnable = BurpUtil.settings.getBoolean(ConfigurableSettings.ISSUE_REPORT_ENABLE_KEY)
 
     init {
         BurpUtil.callbacks.registerExtensionStateListener(this)
-        BurpUtil.settings.register(ConfigurableSettings.ISSUE_CALLBACK_ENABLE_KEY) {
+        BurpUtil.settings.register(ConfigurableSettings.ISSUE_REPORT_ENABLE_KEY) {
             issueCallbackEnable = it.toBoolean()
         }
         HttpClient(CIO).close() // fully load class to avoid ClassNotFoundException when calling extensionUnloaded method
@@ -40,11 +40,20 @@ class BurpScannerListener :
 
     private fun postScanIssue(issue: IScanIssue) {
         runBlocking {
-            val jiraId = findJiraId(issue.httpMessages.first())
-            val callbackUrl = BurpUtil.settings.getString(ConfigurableSettings.ISSUE_CALLBACK_URL_KEY)
+            val callbackUrl = BurpUtil.settings.getString(ConfigurableSettings.ISSUE_REPORT_URL_KEY)
             val response = httpClient.post(callbackUrl) {
                 contentType(ContentType.Application.Json)
-                setBody(mapOf(123 to listOf("aaa", "Jet", "Brains", jiraId)))
+                setBody(
+                    mapOf(
+                        "url" to issue.url.toString(),
+                        "issueName" to issue.issueName,
+                        "issueDetail" to issue.issueDetail,
+                        "issueBackground" to issue.issueBackground,
+                        "severity" to issue.severity,
+                        "confidence" to issue.confidence,
+                        "jiraId" to issue.httpMessages.firstOrNull()?.let(::findJiraId),
+                    )
+                )
             }
             BurpUtil.logDebug(response)
             BurpUtil.logDebug(response.bodyAsText())
@@ -52,9 +61,10 @@ class BurpScannerListener :
     }
 
     private fun findJiraId(requestResponse: IHttpRequestResponse): String? {
+        val prefix = "jira_id: "
         val requestInfo = BurpUtil.helpers.analyzeRequest(requestResponse.request)
-        return requestInfo.headers.find { it.startsWith("jira_id: ", true) }
-            ?.substring(9)
+        return requestInfo.headers.find { it.startsWith(prefix, true) }
+            ?.substring(prefix.length)
     }
 
     override fun extensionUnloaded() = httpClient.close()

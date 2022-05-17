@@ -2,6 +2,8 @@ package burp
 
 import burp.spel.TemplateExpressionEvaluator
 import org.springframework.expression.EvaluationContext
+import java.time.Duration
+import java.time.Instant
 import kotlin.random.Random
 
 fun Long.between(i: Long, j: Long) = this in i..j
@@ -11,9 +13,9 @@ fun EvaluationContext.evaluate(expression: String) = TemplateExpressionEvaluator
 inline fun <reified T> clazz() = T::class.java
 
 inline fun <R> measureTimeMillisWithResult(block: () -> R): Pair<R, Long> {
-    val start = System.currentTimeMillis()
+    val start = Instant.now()
     val result = block()
-    return result to (System.currentTimeMillis() - start)
+    return result to Duration.between(start, Instant.now()).toMillis()
 }
 
 private val LOWER_CHARS = 'a'..'z'

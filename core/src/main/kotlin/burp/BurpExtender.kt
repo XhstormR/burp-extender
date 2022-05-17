@@ -9,25 +9,19 @@ import javax.swing.SwingUtilities
 
 open class BurpExtender : IBurpExtender {
 
-    private lateinit var burpExtender: IBurpExtenderCallbacks
-
-    private lateinit var helpers: IExtensionHelpers
-
     private lateinit var burpPanelHelper: BurpPanelHelper
 
     override fun registerExtenderCallbacks(callbacks: IBurpExtenderCallbacks) {
         BurpUtil.init(callbacks)
         BurpUtil.log("Loaded $EXTENSION_NAME v$VERSION")
 
-        burpExtender = callbacks
-        helpers = callbacks.helpers
         burpPanelHelper = BurpPanelHelper(callbacks)
 
         callbacks.setExtensionName(EXTENSION_NAME)
-        callbacks.registerScannerInsertionPointProvider(PathInsertionPointProvider(helpers))
-        callbacks.registerScannerInsertionPointProvider(HeaderInsertionPointProvider(helpers))
-        callbacks.registerScannerInsertionPointProvider(CookieInsertionPointProvider(helpers))
-        callbacks.registerScannerInsertionPointProvider(UrlRawInsertionPointProvider(helpers))
+        callbacks.registerScannerInsertionPointProvider(PathInsertionPointProvider(callbacks.helpers))
+        callbacks.registerScannerInsertionPointProvider(HeaderInsertionPointProvider(callbacks.helpers))
+        callbacks.registerScannerInsertionPointProvider(CookieInsertionPointProvider(callbacks.helpers))
+        callbacks.registerScannerInsertionPointProvider(UrlRawInsertionPointProvider(callbacks.helpers))
         callbacks.registerScannerListener(BurpScannerListener())
         callbacks.registerExtensionStateListener(createExtensionStateListener())
 
@@ -36,8 +30,8 @@ open class BurpExtender : IBurpExtender {
 
     private fun initUI() {
         with(createConfigurationTab()) {
-            burpExtender.customizeUiComponent(uiComponent)
-            burpExtender.addSuiteTab(this)
+            BurpUtil.callbacks.customizeUiComponent(uiComponent)
+            BurpUtil.callbacks.addSuiteTab(this)
         }
     }
 

@@ -22,15 +22,15 @@ class ConfigurableSettings {
     companion object {
         const val PROFILE_PATH_KEY = "profile path"
         const val LOG_DEBUG_ENABLE_KEY = "enable debug log"
-        const val ISSUE_CALLBACK_URL_KEY = "issue callback url"
-        const val ISSUE_CALLBACK_ENABLE_KEY = "enable issue callback"
+        const val ISSUE_REPORT_URL_KEY = "issue report url"
+        const val ISSUE_REPORT_ENABLE_KEY = "enable issue report"
     }
 
     init {
-        register(PROFILE_PATH_KEY, "", "profile path")
-        register(LOG_DEBUG_ENABLE_KEY, false)
-        register(ISSUE_CALLBACK_URL_KEY, "http://127.0.0.1:8080/issue/callback", "issue callback url")
-        register(ISSUE_CALLBACK_ENABLE_KEY, false)
+        register(PROFILE_PATH_KEY, "", PROFILE_PATH_KEY)
+        register(LOG_DEBUG_ENABLE_KEY, false, LOG_DEBUG_ENABLE_KEY)
+        register(ISSUE_REPORT_URL_KEY, "https://httpbin.org/anything", ISSUE_REPORT_URL_KEY)
+        register(ISSUE_REPORT_ENABLE_KEY, false, ISSUE_REPORT_ENABLE_KEY)
     }
 
     fun register(key: String, value: Any) =

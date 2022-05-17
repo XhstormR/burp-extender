@@ -97,7 +97,7 @@ class BurpRequestResponseWrapper(
             return true
         }
 
-        fun checkRange(value:Long, range: String): Boolean {
+        fun checkRange(value: Long, range: String): Boolean {
             val (i, j) = range.split('-')
                 .take(2)
                 .map { it.toLong() }
